@@ -1,0 +1,199 @@
+/* source : https://www.24joursdeweb.fr/2018/dessiner-en-css-c-est-facile/ */
+/* help : https://bennettfeely.com/clippy/ */
+
+#spinnervinyl{
+	position: fixed;
+  height: 230px;
+	width: 230px;
+	top:calc(50vh - 115px);
+	left:calc(50vw - 115px);
+	margin:0;
+	padding:0;
+	/* left: calc(50% - 115px);
+	top: calc(50% - 115px); */
+	z-index:3000;
+  /* animation: appartition 2s linear; */
+	transition: top 0.05s ease-in-out;
+}
+#spinnervinyl.disabled{
+	top: 60%;
+	display: none;
+	transition: top 0.05s ease-in-out;
+}
+/* .spinnervinyl{
+  margin: 0 auto;
+  width: 230px;
+	z-index:3000;
+} */
+.vinyl {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 230px;
+  height: 230px;
+  background: #2D3E4F;
+  border-radius: 50%;
+}
+.vinyl::after {
+  content: "";
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  background: #EBEBEB;
+  border: solid 2px  rgb(0, 26, 87);
+}
+.label {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  background: rgb(255, 252, 221);
+}
+
+.label::before,
+.label::after {
+  content: "";
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+}
+
+.label::before {
+  width: 70px;
+  height: 70px;
+  background: rgba(223, 223, 223, 0.404);
+  border: solid 1px rgb(0, 26, 87);
+}
+
+.label::after {
+  width: 65px;
+  height: 32.5px;
+  bottom: 32.5px;
+  background: rgba(73, 73, 73, 0.836);
+  border-radius: 32.5px 32.5px 0 0;
+}
+.vinyl-font {
+  font-family: Roboto, Arial, Sans-serif;
+  font-size: 0.5em;
+  text-align: center;
+  z-index: 10;
+  position: absolute;
+  color: #ffffff;
+}
+
+.vinyl-title {
+  margin: 20px;
+  color: #ffffff;
+}
+
+.vinyl-group {
+  top: 50px;
+  left: 10px;
+  width: 60px;
+  color: #000000;
+}
+.vinyl-reflection-bas-droite, .vinyl-reflection-haut-gauche, .vinyl-reflection-gauche, .vinyl-reflection-droite {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.vinyl-reflection-haut-gauche {
+  background-color: #ffffff11;
+	clip-path: polygon(25% 0, 0 25%, 50% 50%);
+}
+
+.vinyl-reflection-bas-droite {
+  background-color: #ffffff11;
+	clip-path: polygon(100% 75%, 75% 100%, 50% 50%);
+}
+/* 
+.vinyl-reflection-gauche {
+  background-color: #ffffff11;
+  clip-path: polygon(50% 50%, 0 75%, 10% 100%);
+}
+
+.vinyl-reflection-droite {
+  background-color: #ffffff11;
+  clip-path: polygon(90% 0, 50% 50%, 100% 25%);
+} */
+
+.vinyl-groove {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  border: solid 2px #2D3E4F;
+}
+
+.vinyl-groove:before, .vinyl-groove:after {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  border: solid 2px #2D3E4F;
+}
+
+.vinyl-groove:before{
+  content: "";
+  width: 180px;
+  height: 180px;
+}
+
+.vinyl-groove:after {
+  content: "";
+  width: 160px;
+  height: 160px;
+}
+
+.spin {
+  animation: spin 4s linear infinite;
+}
+
+.vibration {
+  animation: vibrations 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vibrations {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  90% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}

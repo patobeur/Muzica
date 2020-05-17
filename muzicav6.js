@@ -14,13 +14,13 @@ class Muzica {
 		this.NbSubmitMax = 3							// nb max de submit si recherche vide
 		this.NbSubmit = 0									// nb couranbt de recherche vide
 		// info nav
-		this.LimitPerPage = 20						// nb couranbt de recherche videoffset
+		this.LimitPerPage = 200						// nb couranbt de recherche videoffset
 		this.ActualOffset = 1									// nb couranbt de recherche videoffset
 		this.NbReponses = 0
 		this.NbPages = 0
 		//
 		this.InputSearch = 'marecherche' 	// contenu du value dans le input recherche
-		this.InputSubmit = 'rechercher' 	// contenu du value dans le submit recherche
+		this.InputSubmit = 'rechercher' 	// contenu du value dans le submit 
 		this.InputSelect = 'maselection'	// contenu du value dans le option select
 		// this.IconeVoirAlbum = 'far fa-eye'
 		// this.IconeVoirAlbum = 'fas fa-plus-square'
@@ -168,20 +168,24 @@ class Muzica {
 				}
 			}
 		)
-		document.querySelector('#'+this.InputSearch).addEventListener(
-			'keyup',
-			function(event){
-				var marecherche = this_clone.Set_CleanString(document.querySelector('#'+this_clone.InputSearch).value)
-				if (marecherche && marecherche != '')
-				{
-					console.clear()
-					this_clone.Set_CleanNewSearch()
-					this_clone.Set_This('Listener','marecherche',marecherche) 								// stockage
-					console.log('Recherche lancée')
-					this_clone.GetRecordings()
-				}
-			}
-		)
+		// document.querySelector('#'+this.InputSearch).addEventListener(
+		// 	'keyup',
+		// 	function(event){
+		// 		var marecherche = this_clone.Set_CleanString(document.querySelector('#'+this_clone.InputSearch).value)
+		// 		if (marecherche && marecherche != '')
+		// 		{
+		// 			console.clear()
+		// 			this_clone.Set_CleanNewSearch()
+		// 			this_clone.Set_This('Listener','marecherche',marecherche) 								// stockage
+		// 			console.log('Recherche lancée')
+		// 			this_clone.GetRecordings()
+		// 		}
+		// 	}
+		// )
+
+
+		
+
 		console.groupEnd()
 	}
 
@@ -191,7 +195,7 @@ class Muzica {
 		if (this.NbReponses > this.LimitPerPage)
 		{
 			this.NbPages = Math.trunc((this.NbReponses/this.LimitPerPage))
-			console.log(this.NbReponses + 'sdf ' + this.LimitPerPage + ' = ' + this.NbPages )
+			// console.log(this.NbReponses + 'sdf ' + this.LimitPerPage + ' = ' + this.NbPages )
 			// this.LimitPerPage = 100						// nb couranbt de recherche videoffset
 			// this.ActualOffset = 0									// nb couranbt de recherche videoffset
 			// this.NbReponses = 0
@@ -218,7 +222,8 @@ class Muzica {
 					pag_previous.appendChild(pag_previous_link)
 					if (this.ActualOffset > this.LimitPerPage)
 					{
-							pag_previous.addEventListener(
+						let ThisClone = this
+						pag_previous.addEventListener(
 							'click',
 							function ChangePagePrevious(e){
 								
@@ -285,7 +290,8 @@ class Muzica {
 
 					}
 
-					// next
+					// NEXT
+					//
 					var pag_next = document.createElement("li")
 					pag_next.className = 'page-item' + (this.ActualOffset <= (this.NbReponses - this.LimitPerPage) ? '' : ' disabled')
 						var pag_next_link = document.createElement("a")
@@ -349,21 +355,21 @@ class Muzica {
 	}
 	
 	Set_FullUrlAlbum(){
-		console.group('Set_FullUrlAlbum')
+		//console.group('Set_FullUrlAlbum')
 		this.Set_This('Set_FullUrlAlbum','UrlDemandeeAlbum',this.UrlDatas.url + this.TypeActuel + this.UrlDatas.inc + 'id:' + this.IdDemandeeAlbum) 	// stockage
-		console.log(this.UrlDemandeeAlbum)
-		console.groupEnd()
+		console.log('url:'+this.UrlDemandeeAlbum)
+		//console.groupEnd()
 	}
 
 	Set_This(Func, Nom, Value){
 		var oldValue = this[Nom]
 		this[Nom] = Value
-		console.log('(' + Func + ') Set_(' + Nom + ': "' + oldValue + '" to "' + Value + '")')
+		//console.log('(' + Func + ') Set_(' + Nom + ': "' + oldValue + '" to "' + Value + '")')
 	}
 
 	Set_NbSubmitPlus1(){
 		this.NbSubmit = this.NbSubmit + 1
-		console.log('NbSubmit:' + this.NbSubmit)
+		//console.log('NbSubmit:' + this.NbSubmit)
 	}
 
 	// Getters
@@ -374,12 +380,13 @@ class Muzica {
 	
 	GetRecordings(){
 		console.groupCollapsed('GetRecordings')
-		console.trace('GetRecordings')
+		// console.trace('GetRecordings')
 		this.initialise
 		this.Set_NbSubmitPlus1()	// incrementation
 		this.Set_CleanNewSearch()	// update and/or reset old datas
 		this.Set_FullUrl()				// set new url with clean data
-		this.Make_BarProgress(0)
+		// this.Make_BarProgress(0)
+		this.vinylturning()
 		var MonPost = new XMLHttpRequest()
 		MonPost.open(this.UrlDatas.methode, this.UrlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
@@ -388,15 +395,19 @@ class Muzica {
 		MonPost.onreadystatechange = function() {
 			console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
 			let chargement = (MonPost.readyState * 25)
-			ThisClone.Make_BarProgress(chargement)
-			
+			// ThisClone.Make_BarProgress(chargement)
+
+			ThisClone.vinylopacity((MonPost.readyState * 25)/100)
+
 			if(MonPost.readyState == 4 && MonPost.status == 200) {
+				
+				ThisClone.vinylturning()
 				ThisClone.Set_This('GetRecordings','ReponseReq',JSON.parse(MonPost.responseText)) 									// stockage
 				ThisClone.Set_This('GetRecordings','NbReponses',ThisClone.ReponseReq.count) 												// stockage
 				ThisClone.AjouterAuxAnciennesRecherches([ThisClone.MaRecherche,ThisClone.UrlDemandee,ThisClone.NbReponses])
 				// set nagigation
 				ThisClone.Set_This('GetRecordings','NbReponses',ThisClone.ReponseReq.count) 												// stockage
-				console.log(ThisClone.NbReponses)
+				// console.log(ThisClone.NbReponses)
 				console.log(ThisClone.ReponseReq)
 				;
 				ThisClone.RefreshReponsesTable()
@@ -406,56 +417,55 @@ class Muzica {
 		MonPost.send()
 		console.groupEnd('(urlrequete:' + this.urlrequete)
 	}
-	GetAlbums(e){
-		console.groupCollapsed('GetAlbums')
-		console.trace('GetAlbums')
+	GetAlbums(lesreleases){
+		console.clear()
+		// console.groupCollapsed('GetAlbums')
+		// console.trace('GetAlbums')
 		this.initialise
 		this.Set_FullUrlAlbum()							// set new url with clean data
-		this.Make_Modal(e)
-		console.log(e)
+		this.Make_Modal(lesreleases)
 		
-		var modalbody = document.querySelector("#"+"modalbody")				
-		var enplus = document.createElement("div")
-		enplus.id = "lesalbums"
-		enplus.className = "lesalbums"
-		enplus.innerHTML = this.IdDemandeeAlbum + '<br>'+ this.UrlDemandeeAlbum
-		modalbody.appendChild(enplus)
 		/*
 		this.Set_FullUrlAlbum()
 		UrlDemandeeAlbum
 		this.RefreshReponsesTable()
 
 		*/
-		console.groupCollapsed('GetAlbums')
-		console.trace('GetAlbums')
-		this.initialise
-		this.Set_FullUrlAlbum()							// set new url with clean data
+		
 		// this.Make_BarProgress(0)
-		var MonPost = new XMLHttpRequest()
-		MonPost.open(this.UrlDatas.methode, this.UrlDemandeeAlbum, true)
-		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+		// var MonPost = new XMLHttpRequest()
+		// MonPost.open(this.UrlDatas.methode, this.UrlDemandeeAlbum, true)
+		// MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+		//MonPost.Headers.Add("User-Agent", (someone@yahoo.com"));
 
-		let ThisClone = this
-		MonPost.onreadystatechange = function() {
-			console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
-			// let chargement = (MonPost.readyState * 25)
-			// ThisClone.Make_BarProgress(chargement)
+		// let ThisClone = this
+
+
+		// MonPost.onreadystatechange = function() {
+		// 	console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
+		// 	// let chargement = (MonPost.readyState * 25)
+		// 	// ThisClone.Make_BarProgress(chargement)
 			
-			if(MonPost.readyState == 4 && MonPost.status == 200) {
-				ThisClone.Set_This('GetAlbums','reponseAlbums',JSON.parse(MonPost.responseText)) 									// stockage
-				// ThisClone.Set_This('GetAlbums','NbReponsesAlbums',ThisClone.ReponseReq.count) 												// stockage
-				// ThisClone.AjouterAuxAnciennesRecherches([ThisClone.MaRecherche,ThisClone.UrlDemandee,ThisClone.NbReponses])
-				console.log(ThisClone.reponseAlbums)
-				// console.log(ThisClone.ReponseReq)
-				// ThisClone.RefreshReponsesTable()
-				var modalbody = document.querySelector("#"+"lesalbums")		
-				modalbody.innerHTML = modalbody.innerHTML + '<br>'+ ThisClone.reponseAlbums.count + ' réponse' + ((ThisClone.reponseAlbums.count > 1) ? 's' : '')
+		// 	if(MonPost.readyState == 4 && MonPost.status == 200) {
+		// 		ThisClone.Set_This('GetAlbums','reponseAlbums',JSON.parse(MonPost.responseText)) 									// stockage
+		// 		// ThisClone.Set_This('GetAlbums','NbReponsesAlbums',ThisClone.ReponseReq.count) 												// stockage
+		// 		// ThisClone.AjouterAuxAnciennesRecherches([ThisClone.MaRecherche,ThisClone.UrlDemandee,ThisClone.NbReponses])
+		// 		console.log(ThisClone.reponseAlbums)
+		// 		// console.log(ThisClone.ReponseReq)
+		// 		// ThisClone.RefreshReponsesTable()
+				// var modalbody = document.querySelector("#"+"lesalbums")		
+				// modalbody.innerHTML = modalbody.innerHTML + '<br>'+ ThisClone.reponseAlbums.count + ' réponse' + ((ThisClone.reponseAlbums.count > 1) ? 's' : '')
+				// modalbody.innerHTML = 'listereleased'
 
-			}
-		}
+
+		// 	}
+		// }
 		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-		MonPost.send()
-		console.groupEnd('(urlrequete:' + this.urlrequete)
+		// MonPost.send()
+
+
+
+		// console.groupEnd()
 	}
 
 	Get_Date(){
@@ -539,7 +549,7 @@ class Muzica {
 				var item = document.createElement("td")
 				item.setAttribute('title', 'artist-credit-id : ' + Objet['artist-credit'][0]['artist']['id'])
 				item.className = 'idline'
-				item.innerHTML = (ligneId++)
+				item.innerHTML = (ligneId)
 				trbody.appendChild(item)
 
 				// artist col
@@ -554,8 +564,25 @@ class Muzica {
 
 				// album col
 				var item = document.createElement("td")
-				item.innerHTML = (Objet['releases'] && Objet['releases'][0]) ? Objet['releases'][0].title : this.nodata
+					// liste release album col
+					let nbreleased = 0
+					if (Objet['releases']){
+						let listereleased = 'L#' + ligneId + "\n"
+						for (var released in Objet['releases']){
+							let lesreleases = Objet['releases'][released]
+							listereleased = listereleased +
+								'' + lesreleases['count'] +
+								' / ' + lesreleases['title'] +
+								' (' + lesreleases['status'] + ')' +
+								' [https://ia802605.us.archive.org/10/items/mbid-'+ lesreleases['id'] + ']' +
+								"\n"
+								nbreleased =  nbreleased + lesreleases['count']
+						}
+						item.setAttribute('title', listereleased)
+					}
+				item.innerHTML = (Objet['releases'] && Objet['releases'][0]) ? Objet['releases'][0].title + ' ('+ nbreleased + ')' : this.nodata
 				trbody.appendChild(item)
+
 
 				// actions col
 				var item = document.createElement("td")
@@ -563,17 +590,21 @@ class Muzica {
 					let	ThisClone = this
 					let itembutton = document.createElement("button")
 					itembutton.setAttribute('recording_id', Objet.id)
-					itembutton.addEventListener(
-						'click',
-						function Modal(e){
-							ThisClone.IdDemandeeAlbum = Objet.id
-							// console.log('fff'+ThisClone.IdDemandeeAlbum)
-							ThisClone.GetAlbums(e)
-							// ThisClone.Make_Modal(e)
-							
-						},
-						{once:false}
-					)
+					
+					if (Objet['releases']){
+						let LeRelease = Objet
+						// let toto = Objet['releases']
+						itembutton.addEventListener(
+							'click',
+							function Modal(e){
+								ThisClone.IdDemandeeAlbum = Objet.id
+								ThisClone.GetAlbums(LeRelease)
+							},
+							{once:false}
+						)
+					}
+
+
 					itembutton.className = 'btn btn-dark'		
 						var iconebutton = document.createElement("i")
 						iconebutton.className = ThisClone.IconeVoirAlbum + ' voirlafiche'
@@ -583,6 +614,8 @@ class Muzica {
 
 
 				tbody.appendChild(trbody)
+				
+				ligneId++
 			}
 
 			return tbody
@@ -594,8 +627,8 @@ class Muzica {
 		}
 	}
 
-	Make_Modal(e){
-
+	Make_Modal(listereleased){
+		console.log(listereleased)
 		if (!document.querySelector('#modalalbum'))
 		{
 			var modalalbum = document.createElement("div")
@@ -603,18 +636,91 @@ class Muzica {
 			modalalbum.className = "fullscreen"
 				
 				var modaldialog = document.createElement("div")
-				modaldialog.className = "modal-dialog"
+				modaldialog.id = "modaldialog"
+				// modaldialog.className = "modal-dialog"
 				modaldialog.setAttribute('role', 'document')
 					var modalcontent = document.createElement("div")
+					modalcontent.id = "modal-content"
 					modalcontent.className = "modal-content"
-						var modalheader = document.createElement("div")
+						
+						
+						// var modalbody = document.createElement("div")
+						// modalbody.id = "modalbody"
+						// modalbody.className = "modal-body"
+						// modalbody.innerHTML = 'Informations'
+						
+						// tag,destId,leString,lId,laClass
+						
+
+
+						// MODAL CONTENT
+						// modalcontent.appendChild(modalheader)
+
+						// this.ifreleases(listereleased)
+
+						
+						// END MODAL CONTENT
+							
+						modaldialog.appendChild(modalcontent)
+						modalalbum.appendChild(modaldialog)
+
+						
+						
+						
+						
+					//	https://musicbrainz.org/ws/2/release/?fmt=json&query=artist:"Daft%20punk" AND release:fc1eb6d6-1c46-429a-8332-4f881c541ae7&limit=200&offset=1
+						
+						//https://ia800906.us.archive.org/5/items/mbid-fc1eb6d6-1c46-429a-8332-4f881c541ae7/mbid-fc1eb6d6-1c46-429a-8332-4f881c541ae7-11707693118_thumb500.jpg
+						
+						document.body.appendChild(modalalbum)
+						this.ModalAddHeader('div','modal-content',(listereleased['artist-credit'] && listereleased['artist-credit'][0]) ? listereleased['artist-credit'][0].name + '-' + listereleased['title'] + "(" + (listereleased['score']) + "%) " + "(" + (listereleased['isrcs']) + ")":'vide')
+						this.ModalAddContent('div','modal-content',"Informations",'modalinfo','modal-body')
+
+
+						// this.ModalAddContent('div','modal-content',(listereleased['artist-credit']) ? "Title - " + listereleased['artist-credit'].name + '-' + listereleased['title'] :'vide','modaltitre','modal-body-content')
+
+						for (let released in listereleased['releases']){
+							let item = listereleased['releases'][released]
+							console.log("ici:"+item)
+							this.ModalAddContent('div','modal-content',(item['title']) ? "Title - " + (item['artist-credit'][0].name) + '-' + item['title']  :'vide','modaltitre','modal-body-content')
+							this.ModalAddContent('div','modal-content',(item['artist-credit'][0].name) ? "Artist - " +  item['artist-credit'][0].name :'vide','modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',"Album - ???",'modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',"Genres - ???",'modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',(item['length']) ? "Length - " + item['length'] :'vide','modalartist','modal-body-content')
+						
+						}
+						
+						this.ModalAddFooter('div','modal-content')
+						// var modalbody = document.querySelector("#"+"modalbody")				
+						// var enplus = document.createElement("div")
+						// enplus.id = "lesalbums"
+						// enplus.className = "lesalbums"
+						// enplus.innerHTML = this.IdDemandeeAlbum + '<br>'+ this.UrlDemandeeAlbum
+						// modalbody.appendChild(enplus)
+
+
+						// var modalbody = document.querySelector("#"+"lesalbums")	
+						// modalbody.innerHTML = listerel
+
+						// modaltitle.innerHTML = (listereleased['artist-credit'] && listereleased['artist-credit'][0]) ? listereleased['artist-credit'][0].name + '-' + listereleased['title'] :'vide'
+		}
+	}
+	ModalAddHeader(tag,destId,leString){
+		let Cible = document.querySelector('#'+destId)
+		
+						// FOOTER
+						var modalheader = document.createElement(tag)
 						modalheader.className = "modal-header"
 							var modaltitle = document.createElement("h5")
-							modaltitle.id = "exampleModalLabel"
-							modaltitle.innerHTML = "Détail de la sélection"
+							modaltitle.id = "ModalLabel"
+							modaltitle.className = "modallabel"
+							// modaltitle.innerHTML = "Détail de la sélection"
+							modaltitle.innerHTML = "Titre"
+							//refresh title
+							modaltitle.innerHTML = leString
 							
 								var modalbutton = document.createElement("button")
-								modalbutton.id = "exampleModalLabel"
+								modalbutton.id = "ModalClose"
 								modalbutton.className = "close"
 								modalbutton.setAttribute('type', 'button')
 								modalbutton.setAttribute('data-dismiss', 'modal')
@@ -636,13 +742,15 @@ class Muzica {
 									
 						modalheader.appendChild(modaltitle)
 						modalheader.appendChild(modalbutton)
-
-						var modalbody = document.createElement("div")
-						modalbody.id = "modalbody"
-						modalbody.className = "modal-body"
-						modalbody.innerHTML = 'Informations'
+						// END FOOTER
 						
-						var modalfooter = document.createElement("div")
+			Cible.appendChild(modalheader)
+	}
+	ModalAddFooter(tag,destId){
+		let Cible = document.querySelector('#'+destId)
+		
+						// FOOTER
+						var modalfooter = document.createElement(tag)
 						modalfooter.className = "modal-footer"
 							var modalannuler = document.createElement("button")
 							modalannuler.className = "btn btn-secondary"
@@ -661,73 +769,136 @@ class Muzica {
 								},
 								{once:true}
 							)
+						modalfooter.appendChild(modalannuler)
+						modalfooter.appendChild(modalfermer)
 
-							modalfooter.appendChild(modalannuler)
-							modalfooter.appendChild(modalfermer)
-
-						modalcontent.appendChild(modalheader)
-						modalcontent.appendChild(modalbody)
-						modalcontent.appendChild(modalfooter)
-							
-						modaldialog.appendChild(modalcontent)
-						modalalbum.appendChild(modaldialog)
-
-						document.body.appendChild(modalalbum)
-
-
+						
+			Cible.appendChild(modalfooter)
+						// END FOOTER
+	}
+	/**
+	 * modalcontent(tag,destId,leString,lId,laClass)
+	 * 
+	 */
+	ModalAddContent(tag,destId,leString,lId,laClass,lIcone=null){
+		console.log("	AddContent: " + leString)
+		let Cible = document.querySelector('#'+destId)
+		if (Cible){
+			let ajout = document.createElement(tag)
+				ajout.id = lId
+				ajout.className = laClass
+				ajout.innerHTML = leString
+				if(lIcone){
+					let icone = document.createElement('i')
+					icone.className = 'fas fa-record-vinyl'
+					ajout.prepend(icone)
+				}
+				
+			Cible.appendChild(ajout)
+		}
+		else{
+			console.log('div [' + destId + '] n\'existe pas')
 		}
 
+	}		
+
+	ifreleases(datas){
+								
+		if (datas){
+			var modalbody = document.querySelector("#"+"lesalbums")	
+			console.log('listereleased')
+			console.log(datas)
+			let listerel = ''	
+			for (var released in datas){
+
+				var modalletitre = document.createElement("div")
+				// modalreleases.id = "modalbody"
+				modalletitre.className = "modal-body-content"
+				modalletitre.innerHTML = 'Title - '
+				// modalcontent.appendChild(modalletitre)
+
+																																																			// 	console.log(released)
+																																																			// 	let laRelease = datas[released]
+																																																			// 	listerel = listerel +
+																																																			// 		'' + laRelease['count'] +
+																																																			// 		' / ' + laRelease['title'] +
+																																																			// 		' (' + laRelease['status'] + ')' +
+																																																			// 		' [https://musicbrainz.org/ws/2/release/'+ laRelease['id'] + ']' +
+																																																			// 		// ' <img src="https://musicbrainz.org/ws/2/release/'+ laRelease['id'] + '/mbid-'+ laRelease['id'] + '.jpg"></img>' +
+																																																			// 		"\n"
+																																																			// 		// nbreleased =  nbreleased + laRelease['count']
+			}
+			modalbody.innerHTML = listerel
+		}
 	}
 
-	Del_BarProgress(value){
-		var aEffacer = document.querySelector('#progressbar')
-		aEffacer.parentNode.removeChild(aEffacer)
+	vinylopacity(centage){
+		console.log(centage)
+		let vinyl = document.querySelector('#spinnervinyl')
+		if(vinyl){
+			vinyl.style.opacity = centage;
+		}
+	}
+	vinylturning(){
+		let vinyl = document.querySelector('#spinnervinyl')
+		if(vinyl){
+			// console.log(vinyl.classList.contains("disabled"));
+			if(vinyl.classList.contains("disabled")){
+				document.querySelector('#spinnervinyl').classList.remove("disabled")
+				document.querySelector('#spinnervinyl').style.opacity = "1";
+			}
+			else{
+				document.querySelector('#spinnervinyl').classList.add("disabled")
+				document.querySelector('#spinnervinyl').style.opacity = "0";
+			}
+		}
 	}
 
-	Make_BarProgress(value){
-	if (document.querySelector('#progressbar') && value === 0)
-	{
-		var aEffacer = document.querySelector('#progressbar')
-		aEffacer.parentNode.removeChild(aEffacer)
-		// aEffacer.style.display = 'none';
-	}
-	if (document.querySelector('#progress'))
-	{
-		let tagProgress = document.querySelector('#progress')
-		let txtProgress = '(' + value + '% )'
-		tagProgress.style.width = value + "%"
-		tagProgress.setAttribute('aria-valuenow', value)
-		tagProgress.innerHTML = txtProgress
-		if (value > 99){setTimeout(this.Del_BarProgress(), 3000)}
-	}
-	else
-	{
-		var tagProgressBar = document.createElement("div")
-		tagProgressBar.id = "progressbar"
-		tagProgressBar.className = "progress"
-
-		var tagProgress = document.createElement("div")
-		tagProgress.id = "progress"
-		tagProgress.className = "progress-bar"
-		tagProgress.innerHTML = "0%"
-		tagProgress.style.width = value + "%"
-		tagProgress.style.color = "white"
-		tagProgress.setAttribute('aria-valuenow', value)
-		tagProgress.setAttribute('aria-valuemin', 0)
-		tagProgress.setAttribute('aria-valuemax', 100)
-		tagProgress.setAttribute('role', 'progress-bar')
-		
-		tagProgressBar.appendChild(tagProgress)
-
-		document.querySelector('#datatable').appendChild(tagProgressBar)
-	}
+	// Del_BarProgress(value){
+	// 	// var aEffacer = document.querySelector('#progressbar')
+	// 	// aEffacer.parentNode.removeChild(aEffacer)
+	// }
 
 
-		// <div class="progress">
-		// 	<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-		// </div>
+	// Make_BarProgress(value){
+	// 	let jelametdans = "#progresss"
+	// 	if (document.querySelector('#progressbar') && value === 0)
+	// 	{
+	// 		var aEffacer = document.querySelector('#progressbar')
+	// 		aEffacer.parentNode.removeChild(aEffacer)
+	// 		// aEffacer.style.display = 'none';
+	// 	}
+	// 	if (document.querySelector('#progress'))
+	// 	{
+	// 		let tagProgress = document.querySelector('#progress')
+	// 		let txtProgress = '(' + value + '% )'
+	// 		tagProgress.style.width = value + "%"
+	// 		tagProgress.setAttribute('aria-valuenow', value)
+	// 		tagProgress.innerHTML = txtProgress
+	// 		if (value > 99){setTimeout(this.Del_BarProgress(), 3000)}
+	// 	}
+	// 	else
+	// 	{
+	// 		var tagProgressBar = document.createElement("div")
+	// 		tagProgressBar.id = "progressbar"
+	// 		tagProgressBar.className = "progress"
 
-	}
+	// 		var tagProgress = document.createElement("div")
+	// 		tagProgress.id = "progress"
+	// 		tagProgress.className = "progress-bar"
+	// 		tagProgress.innerHTML = "0%"
+	// 		tagProgress.style.width = value + "%"
+	// 		tagProgress.style.color = "white"
+	// 		tagProgress.setAttribute('aria-valuenow', value)
+	// 		tagProgress.setAttribute('aria-valuemin', 0)
+	// 		tagProgress.setAttribute('aria-valuemax', 100)
+	// 		tagProgress.setAttribute('role', 'progress-bar')
+			
+	// 		tagProgressBar.appendChild(tagProgress)
+
+	// 		document.querySelector(jelametdans).appendChild(tagProgressBar)
+	// 	}
+	// }
 
 	RefreshInnerHtml(objetid,content,by=false)
 	{
@@ -864,6 +1035,8 @@ class Muzica {
 				card.appendChild(cardbody)
 
 				containertableau.appendChild(card)
+				
+		this.Make_SelectMenu()	
 	}
 
 	RefreshReponsesTable(tbody)
@@ -913,4 +1086,3 @@ class Muzica {
 let Zik = new Muzica('musika')
 Zik.Listener()
 Zik.DisplayHtmlPage()
-Zik.Make_SelectMenu()

@@ -15,71 +15,136 @@
 			<link href="assets/css/sb-admin-2.css" rel="stylesheet">
 			<link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 			<link href="assets/theme/style.css" rel="stylesheet">
+			<link href="assets/theme/vinyl.css" rel="stylesheet">
+			<link href="assets/theme/modal.css" rel="stylesheet">
 			<!-- <link rel="stylesheet" href="assets/css/theme/main.css"> -->				
 		</head>
 		<body id="page-top">
 
+
+
 			<!-- Page Wrapper -->
 			<div id="wrapper">
 
-			<!-- Content Wrapper -->
-			<div id="content-wrapper" class="d-flex flex-column">
-				<!-- Main Content -->
-				<div id="content">
-					<!-- Topbar -->
-					<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-						<!-- Topbar Search -->
-						<form id="rechercher" class="d-none d-sm-inline-block form-inline navbar-search">
-							<div class="input-group">
-								<input id="marecherche" type="text" class="form-control bg-light border-0 small" placeholder="votre recherche..." aria-label="Search" aria-describedby="muzikasearch">
-								<select id="maselection" class="custom-select">
+				
 
+
+
+			
+				<!-- Content Wrapper -->
+				<div id="content-wrapper" class="d-flex flex-column">
+					<!-- Main Content -->
+					<div id="content">
+						<!-- Topbar -->
+						<nav id="pageheader" class="navbar fixed-top navbar-expand-sm navbar-dark bg-dark">
+							<a class="navbar-brand" href="#">
+								<i class="fas fa-volume-up"></i>
+								MusicBrainZ Clone
+							</a>
+							<ul class="navbar-nav mr-auto">
+							</ul>
+							<a class="navbar-text" href="#">
+								<i class="fas fa-volume-up"></i>
+								Info
+							</a>
+						</nav>
+						<!-- Topbar -->
+
+						<!-- Form Search -->
+						<form id="rechercher" class="navbar navbar-light bg-white topbar shadow form-inline">
+							<div class="input-group-sm mr-auto">
+							<!-- <div class=" mr-auto"> -->
+								<input id="marecherche" type="text" class="" placeholder="votre recherche..." aria-label="Search" aria-describedby="muzikasearch">
+							<!-- </div> -->
+							</div>
+							<div class="input-group">
+								<select id="maselection" class="">
 								</select>
-								<div class="input-group-append">
-									<button class="btn btn-primary" type="submit">
-										<i class="fas fa-search fa-sm"></i>
-									</button>
-								</div>
+								<button id="submit" class="" type="submit">
+									<i class="fas fa-search fa-sm"></i>
+								</button>
 							</div>
 						</form>
-						<!-- Topbar Navbar -->
-						<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And here's some amazing content. It's very engaging. Right?">Dismissible popover</a>
-					</nav>
-					<!-- End of Topbar -->
+						<!-- End of Form Search -->
 
-					<!-- Begin Page Content -->
-					<div id="containertableau" class="container-fluid">
 
+						<!-- Begin progresss -->
+						<!-- <div id="progresss" class="container-fluid bg-light"></div> -->
+						<!-- End of progresss -->
+
+						<!-- Begin Page Content -->
+						<div id="containertableau" class="container-fluid">	</div>
+						<!-- End of Page Content -->
 
 					</div>
-					<!-- /.container-fluid -->
-
+					<!-- End of Main Content -->
 				</div>
-				<!-- End of Main Content -->
+				<!-- End of Content Wrapper -->
 
-				<!-- Footer -->
-				<footer class="sticky-footer bg-white">
-					<div class="container my-auto">
-					<div class="copyright text-center my-auto">
-						<span>Database&copy;MuzicBrain | <a href="https://github.com/patobeur/Muzica">Code&copy;Patobeur</a> | Design&copy;Bootstrap</span>
-					</div>
-					</div>
+
+				<footer id="pagefooter" class="">
+					<span class="">					
+						<button id="info_link" type="button" class="footerlink boutton"  href="#">
+							<i class="fas fa-volume-up"></i>
+							Info
+						</button>
+
+						<button id="muzicbrainz_link" type="button" class="footerlink boutton" href="https://musicbrainz.org/" target="_muzicbrainz">
+							<i class="fas fa-database"></i>
+							MusicBrainz
+						</button>
+
+						<button id="github_link" type="button" class="footerlink boutton"  href="https://github.com/patobeur/Muzica" target="_github">
+							<i class="fas fa-file-code"></i>
+							Patobeur
+						</button>
+
+						<button id="fontawesome_link" type="button" class="footerlink boutton"  href="https://getbootstrap.com" target="_bootstrap">
+							<i class="fas fa-pencil-ruler"></i>
+							Bootstrap
+						</button>
+
+						<button id="awesome_link" type="button" class="footerlink boutton"  href="https://fontawesome.com" target="_fontawesome">
+							<i class="fab fa-font-awesome-flag"></i>
+							FontAwesome
+						</button>
+					</span>
 				</footer>
-
 			</div>
-			<!-- End of Content Wrapper -->
+			<!-- End of Wrapper -->
 
-		</div>
-		<!-- End of Page Wrapper -->
+			<!-- Scroll to Top Button-->
+			<a class="scroll-to-top rounded" href="#page-top">
+			<i class="fas fa-angle-up"></i>
+			</a>
 
-		<!-- Scroll to Top Button-->
-		<a class="scroll-to-top rounded" href="#page-top">
-		<i class="fas fa-angle-up"></i>
-		</a>
+
+			<div id="spinnervinyl" class="disabled">
+				<div class="vinyl">
+					<div class="vinyl-reflection-haut-gauche">
+					</div>
+					<div class="vinyl-reflection-bas-droite">
+					</div>
+					<!-- <div class="vinyl-reflection-gauche vibration">
+					</div>
+					<div class="vinyl-reflection-droite vibration">
+					</div> -->
+					<div class="disc-groove">
+					</div>
+					<div class="label spin">
+						<div class="vinyl-font vinyl-title">
+							PATOBEUR
+						</div>
+						<div class="vinyl-font vinyl-group">
+							JAVASCRIPT ECF 
+						</div>
+					</div>
+				</div>
+			</div>
 	
 
-		<!-- <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script> -->
-		<script src="muzicav6.js" type="text/javascript"></script>
-
+			<!-- <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script> -->
+			<script src="muzicav6.js" type="text/javascript"></script>
+			<script src="ergonomie.js" type="text/javascript"></script>
 		</body>
 	</html>
