@@ -6,13 +6,104 @@
 	top: 0;
 	bottom: 0;
 } */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 #wrapper {
 	padding-top: 50px;
 	padding-bottom: 100px;
 }
-#marecherche{
+/* *,
+*::before,
+*::after {
+  box-sizing: border-box;
+} */
+.rechercher {
+
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+	width: 100%;
+	height: 4.375rem;
+	display: flex;
+	flex-direction: row;
+	/* flex-wrap: wrap; */
+	justify-content: center;
+	/* align-items: stretch; */
+	
+	background-color: rgb(175, 175, 175);
+}
+.rechercher2 {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	/* flex-wrap: wrap; */
+	/* justify-content: center; */
+	/* align-items: stretch; */
+	background-color: rgb(168, 168, 168);
+}
+.cools{
+	width:100%;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	-webkit-justify-content: space-around;
+	-ms-flex-pack: distribute;
+	justify-content: space-around;
+	-webkit-align-content: stretch;
+	-ms-flex-line-pack: stretch;
+	align-content: stretch;
+	-webkit-align-items: flex-start;
+	-ms-flex-align: start;
+	align-items: flex-start;
+}
+.cool{
+	height:100%;
+	padding:0;
+	margin:0;
+}
+.cool::before,
+.cool::after {
+  box-sizing: border-box;
+}
+.cool:nth-child(1) {
+	-webkit-order: 0;
+	-ms-flex-order: 0;
+	order: 0;
+	-webkit-flex: 1 0 auto;
+	-ms-flex: 1 0 auto;
+	flex: 1 0 auto;
+	-webkit-align-self: auto;
+	-ms-flex-item-align: auto;
+	align-self: auto;
+	background-color: lawngreen;
+	}
+
+.cool:nth-child(2) {
+	-webkit-order: 0;
+	-ms-flex-order: 0;
+	order: 0;
+	-webkit-flex: 0 0 auto;
+	-ms-flex: 0 0 auto;
+	flex: 0 0 auto;
+	-webkit-align-self: auto;
+	-ms-flex-item-align: auto;
+	align-self: auto;
+	background-color: rgb(252, 134, 0);
+	}
+
+.marecherche {
+	width: 100%;
 	background-color: #f8f9fc !important;
-	height: calc(1.5em + 0.5rem + 2px);
+	height: calc(2rem + 2px);
 	padding: 0.25rem 0.5rem;
 	margin: 0;
 	font-size: 0.875rem;
@@ -24,19 +115,21 @@
 	text-align: left;
 	border: 0 !important;
 	overflow: visible;
+	background-color: rgb(250, 250, 250);
 }
-
-#marecherche::before,#marecherche::after{
+/* 
+.marecherche::before, .marecherche::after{
 	box-sizing: border-box;
-}
-#maselection{
+} */
+
+#maselection, #maselection1 {
 	border-radius: 0px;
 	border-radius: 9px;
 			border-top-right-radius: 9px;
 			border-bottom-right-radius: 9px;
 	position: relative;
 	flex: 1 1 auto;
-	width: 1%;
+	width: auto;
 	margin-bottom: 0;
 	display: inline-block;
 	height: calc(1.5em + 0.75rem + 2px);
@@ -54,23 +147,27 @@
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-
-
 	background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%235a5c69' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
 }
-#maselection:select{
+#maselection:select, #maselection1:select{
 	transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 	word-wrap: normal;
 }
-#maselection::before,#maselection::after{
+#maselection::before,#maselection::after,
+#maselection1::before,#maselection1::after{
 	box-sizing: border-box;
 }
+#maselection::after, #maselection1::after{
+	content: '';
+}
 
-#maselection:not(:last-child) {
+#maselection:not(:last-child) ,
+#maselection1:not(:last-child) {
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0
 }
-#submit{
+#submit,
+#submit1{
 	margin: 0;
 	margin-left:5px;
 	display: inline-block;
@@ -94,12 +191,12 @@
 	border-color: #4e73df;
 	border-radius: 9px;
 }
-#submit, [type="button"], [type="reset"], [type="submit"] {
+#submit, #submit1, [type="button"], [type="reset"], [type="submit"] {
 	-webkit-appearance: button;
 	-moz-appearance: button;
 }
 
-#submit:hover {
+#submit:hover, #submit1:hover {
 	text-transform: none;
 	color: #4e73df;
 	background-color: #ffffff;
@@ -108,11 +205,12 @@
 	border-radius: 9px;
 	transition: color 1s ease-in-out, background-color .5s ease-in-out, border-color .5s ease-in-out, box-shadow .5s ease-in-out;
 }
-#submit,input {
+#submit, #submit1 {
 	overflow: visible;
 }
 
-#submit::before,#submit::after{
+#submit::before,#submit::after,
+#submit1::before,#submit1::after{
 	box-sizing: border-box;
 }
 
@@ -131,7 +229,7 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	z-index: 2;
+	z-index: 3001;
 	background-color: none;/* rgba(0,0,0,.5); */
 	height:30px;
 }

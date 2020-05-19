@@ -4,7 +4,7 @@
 class Muzica {
 	constructor (muzica)
 	{
-		this.Version = 6
+		this.Version = 7
 		console.groupCollapsed('muzica'+ 'V' + this.Version + '.js')
 		console.log('constructor()')
 		// console.trace()
@@ -37,6 +37,10 @@ class Muzica {
 		this.NbReponses = 0
 		this.nodata = 'no data'
 		
+		this.vinyl_Buton = true// n'apparait pas lors de la recherche si true 
+		this.vinyl_enabled = true 
+		this.vinyl_searching = false // true si recherche en cours
+		
 		this.UrlDemandeeAlbum = ''
 		this.IdDemandeeAlbum = ''
 		//
@@ -50,7 +54,7 @@ class Muzica {
 		{
 			'default': {
 				"name": 					"default",
-				"texteselect": 		"Artist,Title,Album (artist,release,recording)",
+				"texteselect": 		"EveryThing",//Artist,Title,Album (artist,release,recording)",
 				"type": 					"recording",
 				"SearchCategorie":"recordings",
 				"intitules": 			["#","artist","title","album","actions"],
@@ -58,7 +62,7 @@ class Muzica {
 			}
 			,'artist': {
 				"name": 					"artist",
-				"texteselect": 		"Artiste (artist)",
+				"texteselect": 		"Artiste",// (artist)",
 				"type": 					"recording",
 				"SearchCategorie":"recordings",
 				"intitules": 			["#","artist","title","album","actions"],
@@ -66,7 +70,7 @@ class Muzica {
 			}
 			,'recording': {
 				"name": 					"recording",
-				"texteselect": 		"Title (recording)",
+				"texteselect": 		"Title",// (recording)",
 				"type": 					"recording",
 				"SearchCategorie":"recordings",
 				"intitules": 			["#","artist","title","album","actions"],
@@ -74,7 +78,7 @@ class Muzica {
 			}
 			,'release': {
 				"name": 					"release",
-				"texteselect":	 	"Album (release)",
+				"texteselect":	 	"Album",// (release)",
 				"type": 					"recording",
 				"SearchCategorie":"recordings",
 				"intitules": 			["#","artist","title","album","actions"],
@@ -130,7 +134,7 @@ class Muzica {
 	Listener(){
 		console.groupCollapsed('Mise en place des "EventListener"')
 		console.trace()
-		let this_clone = this
+		let ThisClone = this
 		document.getElementById('rechercher').addEventListener(
 			'submit',
 			function(event)
@@ -139,15 +143,16 @@ class Muzica {
 				
 				console.clear()
 				console.log('rechercher cliqué -> remise a zero')
-				this_clone.StartFromScratch() // remise a zero
-				if (this_clone.IsActif()){
+				ThisClone.StartFromScratch() // remise a zero
+				if (ThisClone.IsActif()){
 					// getting search words in input
-					var MaRecherche = document.querySelector('#'+this_clone.InputSearch).value;
-					if (this_clone.Set_CleanString(MaRecherche))
+					let marecherche = document.querySelector('#'+ThisClone.InputSearch).value;
+					if (marecherche && marecherche != '')
 					{
-						this_clone.Set_This('Listener:','MaRecherche',this_clone.Set_CleanString(MaRecherche)) 							// stockage
 						console.log('Recherche lancée')
-						this_clone.GetRecordings()
+						ThisClone.Set_This('Set_CleanNewSearch','ActualOffset',1) 											// stockage
+						ThisClone.Set_This('Listener:','MaRecherche',ThisClone.Set_CleanString(marecherche)) 							// stockage
+						ThisClone.GetRecordings()
 					}
 					else
 					{
@@ -156,34 +161,43 @@ class Muzica {
 				}
 			}
 		)
-		document.querySelector('#'+this_clone.InputSelect).addEventListener(
+		// champs recherche
+		document.querySelector('#'+ThisClone.InputSelect).addEventListener(
 			'change',
 			function(event){
-				var MaSelection = this_clone.Set_CleanString(document.querySelector('#'+this_clone.InputSelect).value)
+				var MaSelection = ThisClone.Set_CleanString(document.querySelector('#'+ThisClone.InputSelect).value)
 				if (MaSelection && MaSelection != '')
 				{
 					console.clear()
-					this_clone.Set_This('Listener','MaSelection',MaSelection) 								// stockage
-					this_clone.Set_CleanNewSearch()
+					ThisClone.Set_This('Listener','MaSelection',MaSelection) 								// stockage
+					
+					ThisClone.Set_This('Set_CleanNewSearch','ActualOffset',1) 											// stockage
+					ThisClone.Set_CleanNewSearch()
 				}
 			}
 		)
 		// document.querySelector('#'+this.InputSearch).addEventListener(
 		// 	'keyup',
 		// 	function(event){
-		// 		var marecherche = this_clone.Set_CleanString(document.querySelector('#'+this_clone.InputSearch).value)
+		// 		var marecherche = ThisClone.Set_CleanString(document.querySelector('#'+ThisClone.InputSearch).value)
 		// 		if (marecherche && marecherche != '')
 		// 		{
 		// 			console.clear()
-		// 			this_clone.Set_CleanNewSearch()
-		// 			this_clone.Set_This('Listener','marecherche',marecherche) 								// stockage
+		// 			ThisClone.Set_CleanNewSearch()
+		// 			ThisClone.Set_This('Listener','marecherche',marecherche) 								// stockage
 		// 			console.log('Recherche lancée')
-		// 			this_clone.GetRecordings()
+		// 			ThisClone.GetRecordings()
 		// 		}
 		// 	}
 		// )
 
 
+		document.querySelector('#vinyl-bouton').addEventListener(
+			'click',
+			function(event){
+					ThisClone.MyOldVinylButon()
+			}
+		)
 		
 
 		console.groupEnd()
@@ -192,9 +206,16 @@ class Muzica {
 	// Setters
 	Set_Pagination(){
 		let bloc = ''
-		if (this.NbReponses > this.LimitPerPage)
+		if (this.NbReponses < 1)
 		{
-			this.NbPages = Math.trunc((this.NbReponses/this.LimitPerPage))
+			if (document.querySelector('#pagination'))
+			{
+				let aEffacer = document.querySelector('#pagination')
+				aEffacer.parentNode.removeChild(aEffacer)
+			}
+		}
+		else if (this.NbReponses > this.LimitPerPage)
+		{
 			// console.log(this.NbReponses + 'sdf ' + this.LimitPerPage + ' = ' + this.NbPages )
 			// this.LimitPerPage = 100						// nb couranbt de recherche videoffset
 			// this.ActualOffset = 0									// nb couranbt de recherche videoffset
@@ -239,13 +260,31 @@ class Muzica {
 					pag_buttons.appendChild(pag_previous)
 
 					// page link
-					for (let i=0; i < 10 ; i++){
+					this.NbPages = Math.trunc((this.NbReponses/this.LimitPerPage))
+					console.log('this.LimitPerPage')
+					console.log(this.LimitPerPage)
+					console.log('this.NbReponses')
+					console.log(this.NbReponses)
+					console.log('this.NbPages')
+					console.log(this.NbPages)
+
+					let max = (this.NbPages > 1) ? (this.NbPages < 10) ? this.NbPages+1 : 10 : this.NbPages
+					for (let i=0; i < max ; i++){
 						let title = 'page ' + ( ( this.LimitPerPage * i ) + 1 ) + ' à ' + ( ( this.LimitPerPage * ( i + 1 ) ) + 1 )
 						
 						let ThisClone = this
 						// buttonpage = buttonpage  + '<li class="page-item"><a class="page-link" href="#" title="' + title + '">' + ( ( this.LimitPerPage * i ) + 1 ) + '</a></li>'
 						
 						var pag_button = document.createElement("li")
+						console.log('--------ActualOffset-------')
+						console.log(this.ActualOffset)
+						if (((this.LimitPerPage*i)+1) == this.ActualOffset)
+						{
+
+						console.log('---------A----------------')
+						console.log((this.LimitPerPage*i)+1)
+						console.log('---------A----------------')
+						}
 						pag_button.className = 'page-item' + (((( this.LimitPerPage*i)+1) == this.ActualOffset) ? ' active' : '' )
 
 						// version button
@@ -269,25 +308,12 @@ class Muzica {
 						pag_button.addEventListener(
 							'click',
 							function ChangePage(e){
-								
-								//console.log('fff'+ThisClone.IdDemandeeAlbum)
-								
 								ThisClone.Set_This( 'Set_Pagination','ActualOffset',((ThisClone.LimitPerPage * i ) + 1) ) 	// stockage
 								ThisClone.GetRecordings()
-								
 							},
 							{once:false}
 						)
-						
 						pag_buttons.appendChild(pag_button)
-
-
-
-
-
-
-
-
 					}
 
 					// NEXT
@@ -325,7 +351,6 @@ class Muzica {
 			{
 				let aEffacer = document.querySelector('#pagination')
 				aEffacer.parentNode.removeChild(aEffacer)
-
 				document.querySelector('#cardtable').prepend(pagination)
 			}
 			else{
@@ -386,7 +411,12 @@ class Muzica {
 		this.Set_CleanNewSearch()	// update and/or reset old datas
 		this.Set_FullUrl()				// set new url with clean data
 		// this.Make_BarProgress(0)
-		this.vinylturning()
+
+		this.Set_This('GetRecordings','vinyl_searching',true)		
+		if (this.vinyl_Buton){
+			this.MyOldVinyl(true)
+		}
+
 		var MonPost = new XMLHttpRequest()
 		MonPost.open(this.UrlDatas.methode, this.UrlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
@@ -397,25 +427,36 @@ class Muzica {
 			let chargement = (MonPost.readyState * 25)
 			// ThisClone.Make_BarProgress(chargement)
 
-			ThisClone.vinylopacity((MonPost.readyState * 25)/100)
+			// ThisClone.MyOldVinylOpacity((MonPost.readyState * 25)/100)
 
 			if(MonPost.readyState == 4 && MonPost.status == 200) {
+				let resultat = JSON.parse(MonPost.responseText)
+				ThisClone.Set_This('GetRecordings','ReponseReq',resultat) 									// stockage
+				// ThisClone.Set_This('GetRecordings','NbReponses',resultat[ThisClone.ReqActuel].length) 												// stockage
 				
-				ThisClone.vinylturning()
-				ThisClone.Set_This('GetRecordings','ReponseReq',JSON.parse(MonPost.responseText)) 									// stockage
-				ThisClone.Set_This('GetRecordings','NbReponses',ThisClone.ReponseReq.count) 												// stockage
+
 				ThisClone.AjouterAuxAnciennesRecherches([ThisClone.MaRecherche,ThisClone.UrlDemandee,ThisClone.NbReponses])
 				// set nagigation
 				ThisClone.Set_This('GetRecordings','NbReponses',ThisClone.ReponseReq.count) 												// stockage
 				// console.log(ThisClone.NbReponses)
+				console.log('errurrrrrrrrrrrrrrrrrrr')
+				console.log(ThisClone.NbReponses)
+
+				console.log('----------------------')
 				console.log(ThisClone.ReponseReq)
-				;
+				console.log('----------------------')
+
+				if (ThisClone.vinyl_Buton && ThisClone.vinyl_searching){
+					ThisClone.MyOldVinyl(false)
+				}	
+				ThisClone.Set_This('GetRecordings','vinyl_searching',false)	
+
 				ThisClone.RefreshReponsesTable()
 			}
 		}
 		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
 		MonPost.send()
-		console.groupEnd('(urlrequete:' + this.urlrequete)
+		console.groupEnd()
 	}
 	GetAlbums(lesreleases){
 		console.clear()
@@ -497,7 +538,7 @@ class Muzica {
 		this.Set_This('Set_CleanNewSearch','ReqActuel',this.Famillia[this.MaSelection].SearchCategorie) // stockage
 		this.Set_This('Set_CleanNewSearch','FullColonnes',this.Famillia[this.MaSelection].SearchTag) 		// stockage
 		this.Set_This('Set_CleanNewSearch','ReponseHtml','') 																						// stockage
-		this.Set_This('Set_CleanNewSearch','ReponseReq','') 																								// stockage
+		this.Set_This('Set_CleanNewSearch','ReponseReq','') 																						// stockage
 		console.groupEnd()
 	}
 
@@ -580,6 +621,10 @@ class Muzica {
 						}
 						item.setAttribute('title', listereleased)
 					}
+					else{
+						// pas de release
+
+					}
 				item.innerHTML = (Objet['releases'] && Objet['releases'][0]) ? Objet['releases'][0].title + ' ('+ nbreleased + ')' : this.nodata
 				trbody.appendChild(item)
 
@@ -598,6 +643,7 @@ class Muzica {
 							'click',
 							function Modal(e){
 								ThisClone.IdDemandeeAlbum = Objet.id
+
 								ThisClone.GetAlbums(LeRelease)
 							},
 							{once:false}
@@ -682,11 +728,11 @@ class Muzica {
 						for (let released in listereleased['releases']){
 							let item = listereleased['releases'][released]
 							console.log("ici:"+item)
-							this.ModalAddContent('div','modal-content',(item['title']) ? "Title - " + (item['artist-credit'][0].name) + '-' + item['title']  :'vide','modaltitre','modal-body-content')
-							this.ModalAddContent('div','modal-content',(item['artist-credit'][0].name) ? "Artist - " +  item['artist-credit'][0].name :'vide','modalartist','modal-body-content')
-							this.ModalAddContent('div','modal-content',"Album - ???",'modalartist','modal-body-content')
-							this.ModalAddContent('div','modal-content',"Genres - ???",'modalartist','modal-body-content')
-							this.ModalAddContent('div','modal-content',(item['length']) ? "Length - " + item['length'] :'vide','modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',		"Title - " + 	( (item['title']) ? item['title']  : 'vide' ),'modaltitre','modal-body-content')
+							this.ModalAddContent('div','modal-content',		"Artist - " + ( (item['artist-credit']) ? item['artist-credit'][0].name : 'vide' ),'modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',		"Album - ???",'modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',		"Genres - ???",'modalartist','modal-body-content')
+							this.ModalAddContent('div','modal-content',		"Length - " + ( (item['length']) ? item['length'] : 'vide'),'modalartist','modal-body-content')
 						
 						}
 						
@@ -832,24 +878,48 @@ class Muzica {
 		}
 	}
 
-	vinylopacity(centage){
+	// SPINNER VINYL
+	MyOldVinylButon(){
+		let vinylactivity = document.querySelector('#vinyl-bouton-content')
+		let spinnervinyl = document.querySelector('#spinnervinyl')
+		if (this.vinyl_Buton){
+			vinylactivity.innerHTML = " Enable Spinner"
+			this.Set_This('vinyl-bouton','vinyl_Buton',false)
+			this.MyOldVinyl(false)
+			console.log('vinyl_Buton:' + this.vinyl_Buton)
+			spinnervinyl.classList.add("disabled")
+			// spinnervinyl.classList.remove("spinning")
+		}
+		else{
+			vinylactivity.innerHTML = " Disable Spinner"
+			this.Set_This('vinyl-bouton','vinyl_Buton',true)
+			console.log('vinyl_Buton:' + this.vinyl_Buton)
+			spinnervinyl.classList.remove("disabled")
+			// spinnervinyl.classList.add("spinning")
+		}
+	}
+
+	MyOldVinylOpacity(centage){
 		console.log(centage)
 		let vinyl = document.querySelector('#spinnervinyl')
 		if(vinyl){
 			vinyl.style.opacity = centage;
 		}
 	}
-	vinylturning(){
+
+	MyOldVinyl(on){
 		let vinyl = document.querySelector('#spinnervinyl')
 		if(vinyl){
-			// console.log(vinyl.classList.contains("disabled"));
-			if(vinyl.classList.contains("disabled")){
-				document.querySelector('#spinnervinyl').classList.remove("disabled")
-				document.querySelector('#spinnervinyl').style.opacity = "1";
+			if (on){
+					vinyl.classList.add("searching")
+					// document.querySelector('#spinnervinyl').style.opacity = "1"
+					// document.querySelector('#vinylsearch').innerHTML = (this.MaRecherche) ? document.querySelector('#marecherche').value : ''
+					// document.querySelector('#vinylalbum').innerHTML = this.Famillia[this.MaSelection]['SearchTag']//'Album'
 			}
 			else{
-				document.querySelector('#spinnervinyl').classList.add("disabled")
-				document.querySelector('#spinnervinyl').style.opacity = "0";
+					vinyl.classList.remove("searching")
+					// document.querySelector('#spinnervinyl').style.opacity = "0"
+					// document.querySelector('#vinylsearch').innerHTML = ''
 			}
 		}
 	}
@@ -961,7 +1031,6 @@ class Muzica {
 
 
 
-			console.log( 'page: ' + this.ReponseReq)
 			tagReadyState.innerHTML = "this.UrlDemandee"
 
 			

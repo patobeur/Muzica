@@ -1,5 +1,5 @@
 "use strict";
-
+// menu footer
 let footerItems = ['info','muzicbrainz','github','fontawesome','awesome']
 for (let i = 0;i<footerItems.length;i++){
 	// document.querySelector('#'+footerItems).addEventListener(}
@@ -9,12 +9,11 @@ for (let i = 0;i<footerItems.length;i++){
 			function(event){
 				let later = document.querySelector('#'+event.target.id)
 				// console.log(event.target)
-				let lesactives = document.querySelector('.active')
-				if (lesactives) {
-					lesactives.classList.remove("active")
+				let lesActifs = document.querySelector('.active')
+				if (lesActifs) {
+					lesActifs.classList.remove("active")
 				}
 				event.target.classList.add("active")
 			}
 		)
-
 }
