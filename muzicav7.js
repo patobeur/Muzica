@@ -165,17 +165,43 @@ class Muzica {
 		document.querySelector('#'+ThisClone.InputSelect).addEventListener(
 			'change',
 			function(event){
-				var MaSelection = ThisClone.Set_CleanString(document.querySelector('#'+ThisClone.InputSelect).value)
+
+				console.clear()
+				var index = event.target.selectedIndex;
+				// Rapporter cette donnée au <p>
+				// pElem.innerHTML = 'selectedIndex: ' + index;
+	
+				let ladiv = document.querySelector('#'+ThisClone.InputSelect)
+				var MaSelection = ThisClone.Set_CleanString(event.target.value)
 				if (MaSelection && MaSelection != '')
 				{
-					console.clear()
 					ThisClone.Set_This('Listener','MaSelection',MaSelection) 								// stockage
-					
 					ThisClone.Set_This('Set_CleanNewSearch','ActualOffset',1) 											// stockage
 					ThisClone.Set_CleanNewSearch()
+					// event.target.listinde [index].setAttribute('toto',titi)
+					event.target[index].setAttribute('selected', true)
+					console.log(event.target[index])
 				}
 			}
 		)
+		// champs recherche
+		// document.querySelector('#'+ThisClone.InputSelect).addEventListener(
+		// 	'change',
+		// 	function(event){
+		// 		let ladiv = document.querySelector('#'+ThisClone.InputSelect)
+		// 		var MaSelection = ThisClone.Set_CleanString(ladiv.value)
+		// 		if (MaSelection && MaSelection != '')
+		// 		{
+		// 			console.clear()
+		// 			console.log('MaSelection.selectedIndex')
+		// 			console.log(MaSelection.selectedIndex)
+		// 			console.log('MaSelection.selectedIndex')
+		// 			ThisClone.Set_This('Listener','MaSelection',MaSelection) 								// stockage
+		// 			ThisClone.Set_This('Set_CleanNewSearch','ActualOffset',1) 											// stockage
+		// 			ThisClone.Set_CleanNewSearch()
+		// 		}
+		// 	}
+		// )
 		// document.querySelector('#'+this.InputSearch).addEventListener(
 		// 	'keyup',
 		// 	function(event){
@@ -551,6 +577,7 @@ class Muzica {
 			var MenuOption = document.createElement("option")
 			MenuOption.text = indexfamillia[datas]['texteselect']
 			MenuOption.value = indexfamillia[datas]['name']
+
 			console.log(indexfamillia[datas]['name'] + '>' + indexfamillia[datas]['texteselect'])
 			MenuFamillia.add(MenuOption)
 			
@@ -883,7 +910,7 @@ class Muzica {
 		let vinylactivity = document.querySelector('#vinyl-bouton-content')
 		let spinnervinyl = document.querySelector('#spinnervinyl')
 		if (this.vinyl_Buton){
-			vinylactivity.innerHTML = " Enable Spinner"
+			vinylactivity.innerHTML = " Spin is Off"
 			this.Set_This('vinyl-bouton','vinyl_Buton',false)
 			this.MyOldVinyl(false)
 			console.log('vinyl_Buton:' + this.vinyl_Buton)
@@ -891,7 +918,7 @@ class Muzica {
 			// spinnervinyl.classList.remove("spinning")
 		}
 		else{
-			vinylactivity.innerHTML = " Disable Spinner"
+			vinylactivity.innerHTML = " Spin is ON"
 			this.Set_This('vinyl-bouton','vinyl_Buton',true)
 			console.log('vinyl_Buton:' + this.vinyl_Buton)
 			spinnervinyl.classList.remove("disabled")

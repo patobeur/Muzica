@@ -56,7 +56,7 @@
 	width: var(--diam_vinyl);
   transform: scale(var(--base_scale));
 	top: calc((var(--diam_vinyl)/2)*-1) ;
-	left: calc(50vw - (var(--diam_vinyl)/2));
+  left: calc(50vw - (var(--diam_vinyl)/2));
 	transition: top 0.2s ease-out, transform 0.5s ease;
   /* animation: rootation 0; */
 	margin:0;
