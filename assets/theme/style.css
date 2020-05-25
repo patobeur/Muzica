@@ -1,76 +1,92 @@
 
-
-#pagefooter {
-	padding: 0;
-	text-align: center !important;
-	position: fixed;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 3001;
-	background-color: none;
-	/* rgba(0,0,0,.5); */
-	height: 30px;
+:root {
+	--search_border_radius: 1em;
+	--search_radius_regen: .5s;
+	--rel_modal_border_radius: 1em;
+	--rel_modal_radius_regen: .5s;
 }
-
-#pagefooter::before,
-#pagefooter::after {
-	box-sizing: border-box;
-}
-
-#pagefooter span {
-	display: inline-block;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.5);
-	/* margin-right: auto !important; */
-}
-
-#pagefooter span::before,
-#pagefooter span::after {
-	box-sizing: border-box;
-}
-
-#pagefooter .boutton {
-	color: #fff;
-	display: inline-block;
-	font-weight: 400;
-	text-align: center;
-	vertical-align: middle;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	/* background-color: transparent; */
-	font-size: 1rem;
-	line-height: 1.5;
-	border-radius: 0.3rem;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-	border: 0 solid transparent;
-	padding: 0 0.75rem;
-	border-bottom: 0;
-	background-color: #00000050;
-	padding-bottom: 40px;
+body {
+	/* min-width: 992px !important; */
 	margin: 0;
-	transition: color 0.15s ease-in-out, background-color 0.5s ease-in-out, padding-bottom 0.5s ease, margin 0.8s ease;
+	padding: 0;
+	font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #858796;
+	text-align: left;
+	background-color: rgba(80, 80, 80, 0.925);
+	width:100vw;
+	height:100vh;
+}
+*, ::before, ::after {
+	box-sizing: border-box;
+}
+.colonneprincipal{
+	width:100%;
+	background-color: rgba(255, 255, 255, 0.87);
+	overflow-x: hidden;
+}
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+	z-index: 10;
+}
+#containertableau{
+	overflow-x: hidden;
+	padding-bottom: 30px;
+	transition: font-size .2s ease-in, padding .2s ease-in, margin .2s ease-in;
+}
+#pageheader {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 11;
+	display: flex;
+	flex-wrap: wrap;
+	/* align-items: center; */
+	justify-content: space-between;
+	padding: 0.5rem 1rem;
+}
+#wrapper {
+  display: flex;
+	height: 100%;
+	background-color: rgb(107, 107, 107);
 }
 
-#pagefooter .boutton.active {
-	background-color: #000000;
-	color: #ffffff;
-	outline: #ffffff;
-	margin-top: -30px;
+#wrapper #content-wrapper {
+  background-color: #f8f9fc;
+  width: 100%;
 }
 
-#pagefooter .boutton:hover {
-	background-color: #000000;
-	color: #ffffff;
-	outline: #ffffff;
-	margin-top: -30px;
-	transition: background-color 0.5s ease-in-out, margin-top 0.1s ease, outline 0.5s ease, color 0.5s ease;
+#wrapper #content-wrapper #content {
+  flex: 1 0 auto;
 }
-
-
+a:link {
+	text-decoration: none;
+}
+.brand-logo, #vinyl-bouton{
+	z-index:13;
+}
+.brand-logo a, .brand-logo:link, .brand-logo:visited,
+.vinyl-bouton a, .vinyl-bouton:link, .vinyl-bouton:visited{
+	color: white;
+}
+.brand-logo a:hover, .brand-logo a:active,
+.vinyl-bouton a:hover, .vinyl-bouton a:active {
+	color: green;
+	font-weight: 600;
+	font-style: italic;
+}
+.pagination, a:link, .pagination a:visited{
+	color: rgb(0, 37, 250);
+}
+.pagination a:link{
+	color: rgb(0, 0, 0);
+}
 
 
 
@@ -81,4 +97,44 @@
 
 .maselection::selection {
 	background-color: rgba(235, 0, 0, 0.925);
+}
+
+
+
+
+.surtop {
+	z-index: 9999;
+}
+
+/* tableau  */
+.cardx{
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	word-wrap: break-word;
+	background-color: #fff;
+	background-clip: border-box;
+	border: 1px solid #e3e6f0;
+	border-radius: var(--search_border_radius);
+	transition: border var(--search_radius_regen) ease-in;
+}
+.card-bodyx {
+	flex: 1 1 auto;
+	padding: 0.9rem;
+}
+
+@media (max-width: 575px) {
+	#containertableau{
+		margin: 1px;
+		padding: 1px;
+		font-size: .8rem;
+		transition: font-size .2s ease-in, padding .2s ease-in, margin .2s ease-in;
+	}
+	.card-bodyx {
+		padding: 0.6rem;
+	}
+}
+.page-item.active .page-link {
+	z-index: 0;
 }

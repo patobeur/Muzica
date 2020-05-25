@@ -1,0 +1,17 @@
+
+.searchbloc {
+	transition: margin-top 0.25s ease-in-out;
+}
+.searchbloc:hover {
+	margin-top: 0;
+	transition: margin 0.25s ease-in-out;
+}
+@media (max-width: 575px) {
+	.searchbloc{
+		/* 
+		margin-top: -45px;
+		margin-bottom: -45px;
+		*/
+		transition: margin 0.25s ease-in-out, padding var(--radius_regen) ease-in;;
+	}
+}

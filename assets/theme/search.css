@@ -1,13 +1,4 @@
 
-:root {
-	--border_radius: 1em;
-	--radius_regen: 1s;
-}
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-}
 .searchbloc::before,
 .searchbloc::after,
 .rechercher::before,
@@ -22,54 +13,39 @@
 
 #wrapper {
 	padding-top: 50px;
-	padding-bottom: 100px;
 }
 
 
 .searchbloc {
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
-	list-style: none;
-	background-color: #a3a3a3;
 	/* margin-top: -20px;
 	transition: margin-top 0.15s ease-in-out; */
-	overflow: hidden;
-	margin-top: 0px;
-	padding: 15px 10px 10px 10px;
+	padding: 5px 10px 0 10px;
+	background-color: rgb(156, 156, 156);
+	transition: padding var(--search_radius_regen) ease-in, background-color var(--search_radius_regen) ease-in;
+	/* height:45px; */
 }
 
 /* .searchbloc:hover {
 	margin-top: 0;
 	transition: margin-top 0.15s ease-in-out;
 } */
-.searchbloc:hover {
-	margin-top: 0;
-}
 
 .rechercher {
-	
-	position: -webkit-sticky;
-	/* Safari */
-	position: sticky;
-	width: 100%;
-	/* display: flex;
-	flex-direction: row;
-	justify-content: center; */
-
 	display: flex;
-	flex-flow: row wrap;
-	flex-direction: row;
-	align-items: center;
-
-	transition: margin-top 0.15s ease-in-out;
-
+	flex-flow: wrap;
+	padding: 5px 0 8 0;
+	margin:0;
+	height:45px;
 }
 
+.rechercher::before, .rechercher::after,
+.searchbloc::before, .searchbloc::after {
+	box-sizing: unset;
+}
 .marecherche {
 	width: 100%;
 	height: calc(2rem + 4px);
-	padding: 0 .5rem;
+	padding: 0 .5rem 0 .75rem;
 	margin: 0;
 	font-size: 0.875rem;
 	font-weight: 400;
@@ -78,17 +54,14 @@
 	line-height: 1.5;
 	border: 1px solid white;
 	border-right: 0;
-	border-radius: var(--border_radius);
+	border-radius: var(--search_border_radius);
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 	overflow: visible;
 	background-color: white;
 
 
-	flex-flow: row wrap;
-	flex-direction: row;
-	align-items: center;
-	transition: background-color 1s ease-in-out, font-size .5s ease-in-out, border-radius var(--radius_regen) ease-in-out;
+	transition: background-color 1s ease-in-out, font-size .5s ease-in-out, border-radius var(--search_radius_regen) ease-in-out;
 }
 .marecherche:focus {
 	font-size: 1rem;
@@ -136,18 +109,19 @@
 	background-color: rgb(241, 241, 241);
 	word-wrap: normal;
 	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 	font-weight: 600;
-	transition: background-color 1s ease-in, font 1s ease-in, border-radius var(--radius_regen) ease-in;
+	transition: background-color 1s ease-in, font 1s ease-in, border-radius var(--search_radius_regen) ease-in;
 	
 }
 .maselection:not(:last-child){
 	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	transition: border-radius var(--radius_regen) ease-in;
+	/* border-bottom-right-radius: 0; */
+	transition: border-radius var(--search_radius_regen) ease-in;
 }
 
 .maselection option:last-child {
-	border-radius: var(--border_radius);
+	border-radius: var(--search_border_radius);
 }
 
 #submit1 {
@@ -171,12 +145,12 @@
 	/* background-color: #4e73df; */
 	background-color: #ffffff;
 	border: 1px solid white;
-	border-radius: var(--border_radius);
+	border-radius: var(--search_border_radius);
 	margin-left: 0;
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	border: 0;
-	transition: color 1s ease-in-out, background-color 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, border-radius var(--radius_regen) ease-in;
+	transition: color 1s ease-in-out, background-color 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, border-radius var(--search_radius_regen) ease-in;
 }
 
 #submit1,
@@ -196,7 +170,7 @@
 	text-transform: none;
 	color: #4e73df;
 	background-color: lawngreen;
-	transition: background-color var(--radius_regen) ease-in, color var(--radius_regen) ease-in, border-color var(--radius_regen) ease-in-out;
+	transition: background-color var(--search_radius_regen) ease-in, color var(--search_radius_regen) ease-in, border-color var(--search_radius_regen) ease-in-out;
 }
 
 
@@ -204,17 +178,16 @@
 	
 .col1 {
 	flex-grow: 1;
-	max-width: 100%;
 }
 
 .col2 {
-	position: relative;
 	display: flex;
+	/* position: relative;
 	flex-wrap: wrap;
 	align-items: stretch;
 	width: auto;
 	padding: 0;
-	margin: 0;
+	margin: 0; */
 }
 
 .col2::before,
@@ -225,40 +198,71 @@
 }
 
 
+.clonA{
+	visibility: hidden;
+}
+.clonB{
+	visibility: unset;
+}
 
 
 @media (max-width: 575px) {
+	.searchbloc{
+		padding: 5px;
+		transition: padding var(--search_radius_regen) ease-in;
+		height:85px;
+	}
+	.clonA{
+		visibility: unset;
+	}
+	.clonB{
+		visibility: hidden;
+	}
 	.marecherche {
 		border: 1px solid #ffffff;
 		border-bottom: 0;
-		border-radius: var(--border_radius);
+		border-radius: var(--search_border_radius);
 		border-bottom-right-radius: 0;
 		border-bottom-left-radius: 0;
-		transition: border-radius var(--radius_regen) ease-in;
+		border-top-right-radius: 0;
+		flex: 1 1 auto;
+		width: auto;
 	}
 
 	.maselection {
 		border: 0;
 		border: 1px solid #ffffff;
 		border-top: 1px solid #f0f0f0;
-		border-bottom-left-radius: var(--border_radius);
-		border-right: 0;
-		transition: border-radius var(--radius_regen) ease-in;
+		border-bottom-left-radius: var(--search_border_radius);
+		border-bottom-right-radius: var(--search_border_radius);
+		transition: border-radius var(--search_radius_regen) ease-in;
+		width: 100%;
 	}
 
 	#submit1 {
 		border: 0;
 		border-top: 1px solid #f0f0f0;
 		border-radius: 0;
-		border-bottom-right-radius: var(--border_radius);
-		transition: border-radius var(--radius_regen) ease-in;
+		border-bottom-right-radius: 0;
+		border-top-right-radius: var(--search_border_radius);
+		transition: border-radius var(--search_radius_regen) ease-in;
 	}
 	#submit1:hover {
 		background-color: rgb(80, 139, 21);
 		color: rgb(255, 255, 255);
-		transition: background-color var(--radius_regen) ease-in, color var(--radius_regen) ease-in;
+		transition: background-color var(--search_radius_regen) ease-in, color var(--search_radius_regen) ease-in;
 	}
 
+	.col1 {
+		display: flex;
+	}
+	.col1::before,
+	.col1::after {
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+	
 	.col2 {
 		/* width: auto; */
 		position: relative;
@@ -266,7 +270,7 @@
 		flex-wrap: wrap;
 		align-items: stretch;
 		width: 100%;
-		transition: width var(--radius_regen) ease-in;
+		transition: width var(--search_radius_regen) ease-in;
 	}
 	/* #submit1:hover {
 		text-transform: none;
