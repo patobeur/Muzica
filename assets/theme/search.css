@@ -21,7 +21,7 @@
 	transition: margin-top 0.15s ease-in-out; */
 	padding: 5px 10px 0 10px;
 	background-color: rgb(156, 156, 156);
-	transition: padding var(--search_radius_regen) ease-in, background-color var(--search_radius_regen) ease-in;
+	transition: padding var(--regen) ease-in, background-color var(--regen) ease-in;
 	/* height:45px; */
 }
 
@@ -61,7 +61,7 @@
 	background-color: white;
 
 
-	transition: background-color 1s ease-in-out, font-size .5s ease-in-out, border-radius var(--search_radius_regen) ease-in-out;
+	transition: background-color 1s ease-in-out, font-size .5s ease-in-out, border-radius var(--regen) ease-in-out;
 }
 .marecherche:focus {
 	font-size: 1rem;
@@ -111,13 +111,13 @@
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	font-weight: 600;
-	transition: background-color 1s ease-in, font 1s ease-in, border-radius var(--search_radius_regen) ease-in;
+	transition: background-color 1s ease-in, font 1s ease-in, border-radius var(--regen) ease-in;
 	
 }
 .maselection:not(:last-child){
 	border-top-right-radius: 0;
 	/* border-bottom-right-radius: 0; */
-	transition: border-radius var(--search_radius_regen) ease-in;
+	transition: border-radius var(--regen) ease-in;
 }
 
 .maselection option:last-child {
@@ -150,7 +150,7 @@
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	border: 0;
-	transition: color 1s ease-in-out, background-color 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, border-radius var(--search_radius_regen) ease-in;
+	transition: color 1s ease-in-out, background-color 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, border-radius var(--regen) ease-in;
 }
 
 #submit1,
@@ -164,13 +164,21 @@
 
 #submit1 {
 	overflow: visible;
+	background-color: rgb(255, 255, 255);
+	transition: background-color .2s ease-in;
 }
 
 #submit1:hover {
+	border:none;
 	text-transform: none;
-	color: #4e73df;
-	background-color: lawngreen;
-	transition: background-color var(--search_radius_regen) ease-in, color var(--search_radius_regen) ease-in, border-color var(--search_radius_regen) ease-in-out;
+	color: #ffffff;
+	background-color: rgb(1, 18, 129);
+	transition: background-color var(--regen) ease-in, color var(--regen) ease-in;
+}
+
+#submit1.no:hover {
+	background-color: rgb(255, 0, 0);
+	transition: background-color var(--regen) ease-in, color var(--regen) ease-in;
 }
 
 
@@ -182,17 +190,12 @@
 
 .col2 {
 	display: flex;
-	/* position: relative;
-	flex-wrap: wrap;
-	align-items: stretch;
-	width: auto;
-	padding: 0;
-	margin: 0; */
+	height:10px;
 }
 
 .col2::before,
 .col2::after {
-	box-sizing: border-box;
+	box-sizing: none;
 	padding: 0;
 	margin: 0;
 }
@@ -200,6 +203,7 @@
 
 .clonA{
 	visibility: hidden;
+	display: none;
 }
 .clonB{
 	visibility: unset;
@@ -209,7 +213,7 @@
 @media (max-width: 575px) {
 	.searchbloc{
 		padding: 5px;
-		transition: padding var(--search_radius_regen) ease-in;
+		transition: padding var(--regen) ease-in;
 		height:85px;
 	}
 	.clonA{
@@ -235,22 +239,22 @@
 		border-top: 1px solid #f0f0f0;
 		border-bottom-left-radius: var(--search_border_radius);
 		border-bottom-right-radius: var(--search_border_radius);
-		transition: border-radius var(--search_radius_regen) ease-in;
+		transition: border-radius var(--regen) ease-in;
 		width: 100%;
 	}
 
 	#submit1 {
 		border: 0;
-		border-top: 1px solid #f0f0f0;
+		/* border-top: 1px solid #f0f0f0; */
 		border-radius: 0;
 		border-bottom-right-radius: 0;
 		border-top-right-radius: var(--search_border_radius);
-		transition: border-radius var(--search_radius_regen) ease-in;
+		transition: border-radius var(--regen) ease-in, background-color var(--regen) ease-in;
 	}
 	#submit1:hover {
-		background-color: rgb(80, 139, 21);
+		background-color: rgb(0, 0, 0);
 		color: rgb(255, 255, 255);
-		transition: background-color var(--search_radius_regen) ease-in, color var(--search_radius_regen) ease-in;
+		transition: background-color var(--regen) ease-in, color var(--regen) ease-in;
 	}
 
 	.col1 {
@@ -270,7 +274,7 @@
 		flex-wrap: wrap;
 		align-items: stretch;
 		width: 100%;
-		transition: width var(--search_radius_regen) ease-in;
+		transition: width var(--regen) ease-in;
 	}
 	/* #submit1:hover {
 		text-transform: none;
@@ -286,4 +290,8 @@
 		transition: margin-top 0.15s ease-in-out;
 		overflow: hidden;
 	} */
+}
+
+#submit1:focus {
+	outline:transparent;
 }

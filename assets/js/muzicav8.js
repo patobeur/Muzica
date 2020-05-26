@@ -2,7 +2,8 @@
 class Muzica {
 	constructor(muzica) {
 		this.Version = 8
-		console.groupCollapsed('muzica' + 'V' + this.Version + '.js')
+		console.groupCollapsed('api version ' + this.Version + ' vanilla js')
+		console.log('ecf javascript 2020')
 		console.log('constructor()')
 		// console.trace()
 		//
@@ -56,7 +57,8 @@ class Muzica {
 				"type": "recording",
 				"SearchCategorie": "recordings",
 				"intitules": ["#", "artist", "title", "album", "actions"],
-				"SearchTag": ["artist", "release", "recording"]
+				"SearchTag": ["artist", "release", "recording"],
+				"iconeclass": "fas fa-globe-europe"
 			},
 			'artist': {
 				"name": "artist",
@@ -64,7 +66,8 @@ class Muzica {
 				"type": "recording",
 				"SearchCategorie": "recordings",
 				"intitules": ["#", "artist", "title", "album", "actions"],
-				"SearchTag": ["artist", "release", "recording"]
+				"SearchTag": ["artist", "release", "recording"],
+				"iconeclass": "fas fa-user-music"
 			},
 			'recording': {
 				"name": "recording",
@@ -72,7 +75,8 @@ class Muzica {
 				"type": "recording",
 				"SearchCategorie": "recordings",
 				"intitules": ["#", "artist", "title", "album", "actions"],
-				"SearchTag": ["artist", "release", "recording"]
+				"SearchTag": ["artist", "release", "recording"],
+				"iconeclass": "fas fa-record-vinyl"
 			},
 			'release': {
 				"name": "release",
@@ -80,7 +84,8 @@ class Muzica {
 				"type": "recording",
 				"SearchCategorie": "recordings",
 				"intitules": ["#", "artist", "title", "album", "actions"],
-				"SearchTag": ["artist", "release", "recording"]
+				"SearchTag": ["artist", "release", "recording"],
+				"iconeclass": "fas fa-album-collection"
 			}
 		}
 		this.modalName = 'rel_modal'
@@ -90,21 +95,30 @@ class Muzica {
 	ajouterAuxAnciennesRecherches(datas) {
 		this.lesAnciennesRecherches.push({
 			"date": this.Get_Date(),
-			"recherche": datas[0],
-			"maselection": datas[1],
-			"nbreponse": datas[2]
+			"recherche": (datas[0] ? datas[0] : null),
+			"url": (datas[1] ? datas[1] : null),
+			"nbreponse": (datas[2] ? datas[2] : null),
+			"select": (datas[3] ? datas[3] : null)
 		})
+		console.log(this.lesAnciennesRecherches)
 	}
+	// HERE WE CAN LISTEN DIF-PARTS OF THE PAGE
 	Listener() {
-		// close modal hit esc
+		// Listening Keaboard
 		document.addEventListener('keydown', (e) => {
 				var modal = document.querySelector('#'+this.modalName);
+				// escape close the modal
 				if (e.keyCode === 27 && modal) {
 					modal.parentNode.removeChild(modal)
 				}
 			}
 		);
-		// submit
+		// Listening hover submit
+		document.querySelector('#' + this.InputSubmit).addEventListener('mouseover', (event) => {
+				this.set_submit_on(document.querySelector('#' + this.InputSearch).value != '')
+			}
+		)
+		// Listening submit
 		document.querySelector('#' + this.InputSubmit).addEventListener('submit', (event) => {
 				event.preventDefault()
 				this.StartFromScratch() // remise a zero
@@ -112,28 +126,29 @@ class Muzica {
 					// getting search words in input
 					let marecherche = document.querySelector('#' + this.InputSearch).value;
 					if (marecherche && marecherche != '') {
-						console.log('Recherche lancée')
-						this.set_This('Listener', 'ActualOffset', 0) // stockage
-						this.set_This('Listener:', 'MaRecherche', this.Set_CleanString(marecherche)) // stockage
+						console.log('--- request sended ---')
+						this.set_This('Listener', 'ActualOffset', 0)
+						this.set_This('Listener:', 'MaRecherche', this.Set_CleanString(marecherche))
 						this.GetRecordings()
 					} else {
-						console.log('Recherche Vide')
+						console.log('--- rempty search ---')
 					}
 				}
 			}
 		)
-		// champs recherche
+		// Listening selects menu
 		document.querySelector('#' + this.InputSelect).addEventListener('change', (event) => {
 			console.clear()
-			var index = event.target.selectedIndex;
+			var index = event.target.selectedIndex
 			document.querySelector('.searchbloc').style.marginTop = null
 			let ladiv = document.querySelector('#' + this.InputSelect)
 			var MaSelection = this.Set_CleanString(event.target.value)
 			if (MaSelection && MaSelection != '') {
-				this.set_This('Listener', 'MaSelection', MaSelection) // stockage
-				this.set_This('Set_CleanNewSearch', 'ActualOffset', 0) // stockage
+				this.set_This('Listener', 'MaSelection', MaSelection)
+				this.set_This('Set_CleanNewSearch', 'ActualOffset', 0)
 				this.Set_CleanNewSearch()
 				event.target[index].setAttribute('selected', true)
+				
 			}
 			document.querySelector('#' + this.InputSelect).blur()
 		})
@@ -144,6 +159,23 @@ class Muzica {
 	}
 
 	// Setters
+	set_stars(score) {
+
+	}
+	set_submit_on(boole) {
+		if (boole){
+			var submitbuts = document.querySelector('.clonA')
+			submitbuts.classList.remove('no')
+			var submitbuts = document.querySelector('.clonB')
+			submitbuts.classList.remove('no')
+		}
+		else {
+			var submitbuts = document.querySelector('.clonA')
+			submitbuts.classList.add('no')
+			var submitbuts = document.querySelector('.clonB')
+			submitbuts.classList.add('no')
+		}
+	}
 	Set_Pagination() {
 		let bloc = ''
 		if (this.NbReponses < 1) {
@@ -173,7 +205,7 @@ class Muzica {
 			pag_previous.appendChild(pag_previous_link)
 			if (this.ActualOffset > this.limitPerPage + 1) {
 				pag_previous.addEventListener('click', (e) => {
-						this.set_This('Set_Pagination', 'ActualOffset', (this.ActualOffset - this.limitPerPage)) // stockage
+						this.set_This('Set_Pagination', 'ActualOffset', (this.ActualOffset - this.limitPerPage))
 						this.GetRecordings()
 					},{once: false}
 				)
@@ -206,7 +238,7 @@ class Muzica {
 				pag_button.appendChild(pag_button_link)
 
 				pag_button.addEventListener('click', (e) => {
-						this.set_This('Set_Pagination', 'ActualOffset', ((this.limitPerPage * i) + 1)) // stockage
+						this.set_This('Set_Pagination', 'ActualOffset', ((this.limitPerPage * i) + 1))
 						this.GetRecordings()
 					},
 					{once: false}
@@ -224,7 +256,7 @@ class Muzica {
 			pag_next.appendChild(pag_next_link)
 			if (this.ActualOffset < (this.NbReponses - this.limitPerPage)) {
 				pag_next.addEventListener('click', (e) => {
-						this.set_This('Set_Pagination', 'ActualOffset', (this.limitPerPage + this.ActualOffset)) // stockage
+						this.set_This('Set_Pagination', 'ActualOffset', (this.limitPerPage + this.ActualOffset))
 						this.GetRecordings()
 					},
 					{once: false}
@@ -254,7 +286,7 @@ class Muzica {
 		} else {
 			fullsearch = this.MaSelection + ':"' + this.MaRecherche + '"'
 		}
-		this.set_This('Set_FullUrl', 'UrlDemandee', this.UrlDatas.url + this.TypeActuel + this.UrlDatas.inc + fullsearch + limit + '&offset=' + this.ActualOffset) // stockage
+		this.set_This('Set_FullUrl', 'UrlDemandee', this.UrlDatas.url + this.TypeActuel + this.UrlDatas.inc + fullsearch + limit + '&offset=' + this.ActualOffset)
 	}
 
 	set_This(Func, Nom, Value) {
@@ -288,12 +320,13 @@ class Muzica {
 			// console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
 				let resultat = JSON.parse(MonPost.responseText)
-				this.set_This('GetRecordings', 'ReponseReq', resultat) // stockage
+				this.set_This('GetRecordings', 'ReponseReq', resultat)
+				// set nb response for pagination
+				this.set_This('GetRecordings', 'NbReponses', this.ReponseReq.count)
 				// old searchs
 				this.ajouterAuxAnciennesRecherches([this.MaRecherche, this.UrlDemandee, this.NbReponses])
-				// set navigation
-				this.set_This('GetRecordings', 'NbReponses', this.ReponseReq.count) // stockage
 				//
+				console.log('--- gotcha/url ---')
 				console.log(this.ReponseReq)
 				if (this.vinyl_Buton && this.vinyl_searching) {
 					this.myOldVinyl(false)
@@ -345,18 +378,18 @@ class Muzica {
 	// Makers
 	Set_CleanString(value) {
 		if (value != '' && value != false && value != null) {
-			if (value.length < 1) return false // 'texte trop cour';
-			if (value.length > 50) return false // 'texte trop long';
+			if (value.length < 1) return false // 'to shorty';
+			if (value.length > 50) return false // 'to long';
 			return encodeURIComponent(value)
 		}
 	}
 
 	Set_CleanNewSearch() {
-		this.set_This('Set_CleanNewSearch', 'TypeActuel', this.Famillia[this.MaSelection].type) // stockage
-		this.set_This('Set_CleanNewSearch', 'ReqActuel', this.Famillia[this.MaSelection].SearchCategorie) // stockage
-		this.set_This('Set_CleanNewSearch', 'FullColonnes', this.Famillia[this.MaSelection].SearchTag) // stockage
-		this.set_This('Set_CleanNewSearch', 'ReponseHtml', '') // stockage
-		this.set_This('Set_CleanNewSearch', 'ReponseReq', '') // stockage
+		this.set_This('Set_CleanNewSearch', 'TypeActuel', this.Famillia[this.MaSelection].type)
+		this.set_This('Set_CleanNewSearch', 'ReqActuel', this.Famillia[this.MaSelection].SearchCategorie)
+		this.set_This('Set_CleanNewSearch', 'FullColonnes', this.Famillia[this.MaSelection].SearchTag)
+		this.set_This('Set_CleanNewSearch', 'ReponseHtml', '')
+		this.set_This('Set_CleanNewSearch', 'ReponseReq', '')
 	}
 
 	Make_SelectMenu() {
@@ -366,6 +399,7 @@ class Muzica {
 			var MenuOption = document.createElement("option")
 			MenuOption.text = indexfamillia[datas]['texteselect']
 			MenuOption.value = indexfamillia[datas]['name']
+				let iconeclass = document.createElement("option")
 			MenuFamillia.add(MenuOption)
 		}
 		MenuFamillia.selectedIndex = 0
@@ -377,11 +411,11 @@ class Muzica {
 	}
 	
 	StartFromScratch() {
-		this.set_This('StartFromScratch', 'ReponseHtml', '') // stockage
-		this.set_This('StartFromScratch', 'ReponseReq', null) // stockage
-		this.set_This('StartFromScratch', 'nbSubmit', 0) // stockage remise à zero des tentative de recherches vides
-		this.set_This('StartFromScratch', 'MaRecherche', '') // stockage
-		// this.set_This('StartFromScratch','MaSelection',null) 																					// stockage
+		this.set_This('StartFromScratch', 'ReponseHtml', '')
+		this.set_This('StartFromScratch', 'ReponseReq', null)
+		this.set_This('StartFromScratch', 'nbSubmit', 0)
+		this.set_This('StartFromScratch', 'MaRecherche', '')
+		// this.set_This('StartFromScratch','MaSelection',null)
 	}
 
 	TableauHtml() {
@@ -535,7 +569,7 @@ class Muzica {
 				// ARTS
 				let art_divid = 'arts-' + lereleased['id']
 				this.ModalAddContent(true, 'div', rel_divid, '', art_divid, 'arts')
-				// this.set_This('Make_Modal', 'mbid', lereleased['id']) // stockage 
+				// this.set_This('Make_Modal', 'mbid', lereleased['id']) 
 				this.get_arts(lereleased['id'])
 				relCount++
 			}
@@ -693,17 +727,24 @@ class Muzica {
 		let vinylactivity = document.querySelector('#vinyl-bouton-content')
 		let spinnervinyl = document.querySelector('#spinnervinyl')
 		if (this.vinyl_Buton) {
-			vinylactivity.textContent = 'SpinIsOff <i class="fas fa-toggle-on"></i>'
 			this.set_This('vinyl-bouton', 'vinyl_Buton', false)
 			this.myOldVinyl(false)
+			vinylactivity.textContent ='SpinIsOff '
+			let vinylactivity_icone = document.createElement("i")
+			vinylactivity_icone.className = "fas fa-toggle-on"
+			vinylactivity.appendChild(vinylactivity_icone)
 			spinnervinyl.classList.add("disabled")
 			event.target.title = 'Switch Spinner OFF'
 			// spinnervinyl.classList.remove("spinning")
-		} else {
-			vinylactivity.textContent = 'SpinIsON <i class="fas fa-toggle-off"></i>'
+		}
+		else {
 			this.set_This('vinyl-bouton', 'vinyl_Buton', true)
 			spinnervinyl.classList.remove("disabled")
 			event.target.title = 'Switch Spinner ON'
+			vinylactivity.textContent ='SpinIsON '
+			let vinylactivity_icone = document.createElement("i")
+			vinylactivity_icone.className = "fas fa-toggle-off"
+			vinylactivity.appendChild(vinylactivity_icone)
 			// spinnervinyl.classList.add("spinning")
 		}
 	}

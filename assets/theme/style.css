@@ -1,7 +1,7 @@
 
 :root {
 	--search_border_radius: 1em;
-	--search_radius_regen: .5s;
+	--regen: .5s;
 	--rel_modal_border_radius: 1em;
 	--rel_modal_radius_regen: .5s;
 }
@@ -117,7 +117,7 @@ a:link {
 	background-clip: border-box;
 	border: 1px solid #e3e6f0;
 	border-radius: var(--search_border_radius);
-	transition: border var(--search_radius_regen) ease-in;
+	transition: border var(--regen) ease-in;
 }
 .card-bodyx {
 	flex: 1 1 auto;
