@@ -7,9 +7,6 @@ class Muzica {
 		console.log('https://github.com/patobeur/Muzica')
 		console.log('Thx you DWWM2 2020')
 		console.log('Full hugs from P4t0b3ur !!!')
-		
-		// console.trace()
-		//
 		this.showOldSearch = false // to do
 
 		this.debug = true // affiche en console si true
@@ -43,7 +40,6 @@ class Muzica {
 		this.nbReponses = 0
 		this.nodata = 'no data'
 
-		this.modalName = 'rel_modal'
 		this.lesAnciennesRecherches = []
 		this.urlmbid = ''
 		this.mbid = ''
@@ -125,18 +121,16 @@ class Muzica {
 		document.querySelector('#' + this.formName).addEventListener('submit', (event) => {
 				event.preventDefault()
 				this.reinit_search() // remise a zero
-				if (this.is_Actif()) {
+				// if (this.is_Actif()) {
 					// getting search words in input
 					let marecherche = document.querySelector('#' + this.inputSearch).value;
 					if (marecherche && marecherche != '') {
-						this.debuglog('--- request sended ---')
 						this.set_This('Listener', 'actualOffset', 0)
 						this.set_This('Listener:', 'maRecherche', this.set_CleanString(marecherche))
 						this.get_ReqRecordings()
 					} else {
-						console.log('--- rempty search ---',null,null)
 					}
-				}
+				// }
 			}
 		)
 		// Listening selects menu
@@ -206,6 +200,8 @@ class Muzica {
 			pag_previous_link.setAttribute('href', '#')
 			pag_previous_link.setAttribute('tabindex', '-1')
 			pag_previous_link.setAttribute('aria-disabled', 'true')
+
+
 			pag_previous_link.textContent = 'Previous'
 			pag_previous.appendChild(pag_previous_link)
 			if (this.actualOffset > this.limitPerPage + 1) {
@@ -288,6 +284,32 @@ class Muzica {
 		this.nbSubmit = this.nbSubmit + 1
 	}
 
+
+	set_images(resultats, mbid) {
+		if (resultats && resultats['images']) {
+			console.log(resultats.images.length + ' image(s)')
+			for (var i in resultats.images) {
+				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.ModalAddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid), 'image-' + mbid, 'modalinfo-item') : ''
+			}
+		}
+	}
+
+	set_CleanString(value) {
+		if (value != '' && value != false && value != null) {
+			if (value.length < 1) return false // 'to shorty';
+			if (value.length > 50) return false // 'to long';
+			return encodeURIComponent(value)
+		}
+	}
+
+	set_CleanNewSearch() {
+		this.set_This('set_CleanNewSearch', 'typeActuel', this.myCats[this.maSelection].type)
+		this.set_This('set_CleanNewSearch', 'reqActuel', this.myCats[this.maSelection].SearchCategorie)
+		this.set_This('set_CleanNewSearch', 'fullColonnes', this.myCats[this.maSelection].SearchTag)
+		this.set_This('set_CleanNewSearch', 'reponseHtml', '')
+		this.set_This('set_CleanNewSearch', 'reponseReq', '')
+	}
+	// GETTERS 
 	get_ReqRecordings() {
 		this.initialise
 		this.set_NbSubmitPlus1() // incrementation
@@ -311,8 +333,8 @@ class Muzica {
 				// old searchs
 				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses])
 				//
-				console.log('--- gotcha/url ---')
-				console.log(this.reponseReq)
+				console.log('Recordings : ')
+				console.log(this.reponseReq.recordings)
 				if (this.vinylButon && this.vinyl_searching) {
 					this.myOldVinyl(false)
 				}
@@ -320,53 +342,33 @@ class Muzica {
 				this.refresh_ResponsTable()
 			}
 		}
+		console.log('Recordings : ' + this.urlDemandee)
 		MonPost.send()
 	}
 
-	get_arts(mbid) {
+	get_ReqArtsByReleaseId(mbid) {
 		let MonPost = new XMLHttpRequest()
-		MonPost.open(this.urlDatas.methode, this.urlDatas['arts'] + mbid + this.urlDatas['fmt'], true)
+		let urlDemandee = this.urlDatas['arts'] + mbid + this.urlDatas['fmt']
+
+		MonPost.open(this.urlDatas.methode, urlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+
 		MonPost.onreadystatechange = (e) => {
-			// console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
-			// console.log('mbid:' + mbid)
-			// console.log(this.urlDatas['arts'] + mbid + this.urlDatas['fmt'])
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
 				let resultats = JSON.parse(MonPost.responseText)
+				console.log('resultats: ')
+				console.log(resultats)
 				this.set_images(resultats, mbid)
 				return resultats
 			}
-		}
-		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-		MonPost.send()
-	}
-
-	set_images(resultats, mbid) {
-		if (resultats && resultats['images']) {
-			console.log(resultats.images.length)
-			for (var i in resultats.images) {
-				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.ModalAddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid), 'image-' + mbid, 'modalinfo-item') : ''
+			else{
+				// console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
 			}
 		}
+		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+		console.log('urlDemandee: ' + urlDemandee)
+		MonPost.send()
 	}
-
-	set_CleanString(value) {
-		if (value != '' && value != false && value != null) {
-			if (value.length < 1) return false // 'to shorty';
-			if (value.length > 50) return false // 'to long';
-			return encodeURIComponent(value)
-		}
-	}
-
-	set_CleanNewSearch() {
-		this.set_This('set_CleanNewSearch', 'typeActuel', this.myCats[this.maSelection].type)
-		this.set_This('set_CleanNewSearch', 'reqActuel', this.myCats[this.maSelection].SearchCategorie)
-		this.set_This('set_CleanNewSearch', 'fullColonnes', this.myCats[this.maSelection].SearchTag)
-		this.set_This('set_CleanNewSearch', 'reponseHtml', '')
-		this.set_This('set_CleanNewSearch', 'reponseReq', '')
-	}
-	// Makers
-
 
 	make_SelectMenu() {
 		let catIndex = this.myCats
@@ -383,9 +385,9 @@ class Muzica {
 	}
 	
 	// Checkers
-	is_Actif() {
-		return this.nbSubmit <= this.nbSubmitDie ? true : false
-	}
+	// is_Actif() {
+	// 	return this.nbSubmit <= this.nbSubmitDie ? true : false
+	// }
 	
 	reinit_search() {
 		this.set_This('reinit_search', 'reponseHtml', '')
@@ -395,13 +397,14 @@ class Muzica {
 		// this.set_This('reinit_search','maSelection',null)
 	}
 
+	// Makers
 	make_HtmlTable() {
 		if (this.reponseReq) {
 			// table body
 			let tbody = document.createElement("tbody")
 			let datas = this.reponseReq[this.reqActuel]
 			let ligneId = this.actualOffset
-			for (var Objet of datas) {
+			for (var dataPack of datas) {
 
 				let trbody = document.createElement("tr")
 				// line number col
@@ -411,51 +414,94 @@ class Muzica {
 				trbody.appendChild(item)
 				// artist col
 				item = document.createElement("td")
-				item.textContent = (Objet['artist-credit'] && Objet['artist-credit'][0]) ? Objet['artist-credit'][0].name : 'vide'
-				item.setAttribute('title', 'artist-credit-id : ' + Objet['artist-credit'][0]['artist']['id'])
+				item.textContent = (dataPack['artist-credit'] && dataPack['artist-credit'][0]) ? dataPack['artist-credit'][0].name : 'vide'
+				item.setAttribute('title', 'artist-credit-id : ' + dataPack['artist-credit'][0]['artist']['id'])
 				trbody.appendChild(item)
 				// title col
-				item = document.createElement("td")
-				item.textContent = (Objet['title']) ? Objet['title'] : 'vide'
-				trbody.appendChild(item)
+				let itemtitle = document.createElement("td")
+				itemtitle.textContent = (dataPack['title']) ? dataPack['title'] : 'vide'
+
+
 				// album col
 				item = document.createElement("td")
 
 				// liste release album col
 				let nbreleased = 0
-				if (Objet['releases']) {
-					let lesreleases = ''
-					for (var released in Objet['releases']) {
-						let lesreleases = Objet['releases'][released]
-						lesreleases = lesreleases +
+				let nblines = 0
+				if (dataPack['releases']) {
+					let lesreleasesA = ''
+					let lesreleasesB = ''
+					for (var released in dataPack['releases']) {
+						let lesreleases = dataPack['releases'][released]
+						lesreleasesA = lesreleasesA +
 							'' + lesreleases['title'] +
 							' (' + lesreleases['status'] + ')' +
 							"\n"
+							lesreleasesB = lesreleasesB +
+								'' + lesreleases['id'] +
+								"\n"
 						nbreleased = nbreleased + lesreleases['count']
+						nblines++
 					}
-					item.setAttribute('title', lesreleases)
+					lesreleasesA = nblines + ' release' + (nblines>1 ? 's' : '') + ' found \n' + lesreleasesA
+					lesreleasesB = nblines + ' release' + (nblines>1 ? 's' : '') + ' found \n' + lesreleasesB
+					itemtitle.setAttribute('title', lesreleasesB)
+					item.setAttribute('title', lesreleasesA)
 				} else {
 					// no release
 				}
-				item.textContent = Objet['title']
-				item.textContent = (Objet['releases'] && Objet['releases'][0]) 
-					? Objet['releases'][0].title
+				item.textContent = dataPack['title']
+				item.textContent = (dataPack['releases'] && dataPack['releases'][0]) 
+					? dataPack['releases'][0].title
 					: this.nodata
+				trbody.appendChild(itemtitle)
 				trbody.appendChild(item)
 				// actions col
 				item = document.createElement("td")
 				item.className = 'actions'
 				let itembutton = document.createElement("button")
-				itembutton.setAttribute('recording_id', Objet.id)
+				itembutton.setAttribute('recording_id', dataPack.id)
+				itembutton.setAttribute('title', 'release Id: ' +dataPack.id)
 
-				if (Objet['releases']) {
+				if (dataPack['releases']) {
+					let leRelease = dataPack
 					itembutton.addEventListener('click', (e) => {
-						this.debuglog('Objet[releases]')
-						this.debuglog(Objet['releases'])
-						this.IdDemandeeAlbum = Objet.id
-						this.Make_Modal(Objet)},
+						console.log('Ouverture modal > release : '+  dataPack.id)
+						this.make_Modal(leRelease)},
 						{once: false})
 				}
+
+				// // ici dataPack passe bien dans make_Modal() mais je crée leRelease pour le faire passer
+				// if (dataPack['releases']) {
+				// 	let leRelease = dataPack
+				// 	itembutton.addEventListener('click', (e) => {
+				// 		this.make_Modal(LeRelease)},{once: false}
+				// )}
+
+				// // ici j'ai fais le ménage et paf ca passe pas en direct !! 
+				// // MAIS WHY DONC ?
+				// if (dataPack['releases']) {
+				// 	itembutton.addEventListener('click', (e) => {
+				// 		this.make_Modal(dataPack)},{once: false}
+				// )}
+								
+												
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 				itembutton.className = 'btn btn-dark'
 				let iconebutton = document.createElement("i")
@@ -473,8 +519,9 @@ class Muzica {
 			return 'vide'
 		}
 	}
-
-	Make_Modal(lesreleases) {
+	make_Modal(lesreleases) {
+		console.log('make_Modal lesreleases')
+		console.log(lesreleases)
 		if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
 			modalalbum.id = "rel_modal"
@@ -504,7 +551,7 @@ class Muzica {
 					this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "isrcs: " + (rec_isrcs ? rec_isrcs : 'vide'), 'modalisrcs', 'rel-modal-contenu-contenu-info-item')
 					rec_score ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Score: " + rec_score + '%', 'modalscore', 'rel-modal-contenu-contenu-info-item') : 'vide'
 					rec_artistcredit ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Artists: " + this.getall_tag(rec_artistcredit, 'name') + '.', 'modalartists', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + rec_length + '/' + this.make_timeformat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
+					rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + rec_length + '/' + this.make_Pylformat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
 					rec_video ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Video: " + rec_video, 'modalvideo', 'rel-modal-contenu-contenu-info-item') : ''
 
 				// RELEASES
@@ -541,33 +588,13 @@ class Muzica {
 					// ARTS
 					let art_divid = 'arts-' + lereleased['id']
 					this.modal_AddContent(true, 'div', rel_divid, '', art_divid, 'arts')
-					this.get_arts(lereleased['id'])
+					this.get_ReqArtsByReleaseId(lereleased['id'])
 
 					relCount++
 				}
 			this.modal_AddHeader('div', 'rel-contenu-modal', (lesreleases['artist-credit'] && lesreleases['artist-credit'][0]) ? 'Record: ' + lesreleases['artist-credit'][0].name + '-' + lesreleases['title'] : 'vide')
 			this.modal_AddFooter('div', 'rel-contenu-modal')
 		}
-	}
-	getall_artistcredit(index, le_name) {
-		if (index.length > 0) {
-			let retour = []
-			for (let i = 0; i < index.length; i++) {
-				retour[i] = index[i][le_name]
-			}
-			return retour.length > 0 ? retour.join(", ") : 'vide'
-		}
-		return 'vide'
-	}
-	getall_tag(index, le_name) {
-		if (index.length > 0) {
-			let retour = []
-			for (let i = 0; i < index.length; i++) {
-				retour[i] = index[i][le_name]
-			}
-			return retour.length > 0 ? retour.join(", ") : 'vide'
-		}
-		return 'vide'
 	}
 
 	// modal stuff
@@ -790,8 +817,36 @@ class Muzica {
 	}
 
 	// tools
-	debuglog(string,data,top){
-		this.debug ? console.log(string) : ''
+	// debuglog(string,title=null,top,data){
+	// 	//➡ ➲ 📋  🖮
+	// 	this.debug && title ? console.log('🔍'+title) : ''
+	// 	this.debug ? console.log(string) : ''
+	// 	// this.debug && title ? console.groupEnd() : ''
+	// }
+	getall_artistcredit(index, le_name) {
+		if (index.length > 0) {
+			let retour = []
+			for (let i = 0; i < index.length; i++) {
+				retour[i] = index[i][le_name]
+			}
+			return retour.length > 0 ? retour.join(", ") : 'vide'
+		}
+		return 'vide'
+	}
+	getall_tag(index, le_name) {
+		if (index.length > 0) {
+			let retour = []
+			for (let i = 0; i < index.length; i++) {
+				retour[i] = index[i][le_name]
+			}
+			return retour.length > 0 ? retour.join(", ") : 'vide'
+		}
+		return 'vide'
+	}
+	make_awesomeico(string){
+		let awesomeico = document.createElement("i")
+		awesomeico.className = string
+		return awesomeico
 	}
 	get_Date() {
 		// let rightnow = Date.now()
@@ -812,14 +867,17 @@ class Muzica {
 		// console.log('(' + Func + ') Get_(' + Nom + '="' + this[Nom] + '")')
 		return this[Nom]
 	}
-	make_timeformat(number) {
-		if (number && number > 0) {
-			// let minutes = Math.floor((number) / 60); 
-			// let seconds = minutes % 60;
-			// return (minutes > 0 ? (minutes > 9 ? minutes : '0' + minutes) : '00') + 'm' + (seconds > 0 ? (seconds > 9 ? seconds : '0' + seconds + 's') : '00')
-			return new Date(number * 1000).toISOString().substr(11, 8)
-		}
-		return '00:00'
+	make_Pylformat(number) {
+		//thx Pyl	
+		let minutes = 0
+    let seconds = 0
+    if (number) {
+				number /= 1000;
+        seconds = Math.floor(number % 60) > 0 ? `${Math.floor(number % 60)}s` : ''
+        minutes = Math.floor(number / 60) > 0 ? `${Math.floor(number / 60)}min` : ''
+        return minutes + seconds
+    }
+		return null
 	}
 	make_linktag(url,text,target) {
 		let link = document.createElement("a")
@@ -829,6 +887,7 @@ class Muzica {
 		link.textContent = text
 		return link
 	}
+
 	// todo 
 	set_Stars(score) {
 		// todo			
