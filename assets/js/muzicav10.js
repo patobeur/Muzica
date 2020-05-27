@@ -1,7 +1,7 @@
 "use strict";
 class Muzica {
 	constructor(muzica) {
-		this.Version = 8
+		this.Version = 10
 		console.groupCollapsed('api version ' + this.Version + ' vanilla js')
 		console.log('ecf javascript 2020')
 		console.log('https://github.com/patobeur/Muzica')
@@ -49,7 +49,8 @@ class Muzica {
 			"url": 'https://musicbrainz.org/ws/2/',
 			"inc": '/?fmt=json' + '&query=',
 			"arts": 'https://coverartarchive.org/release/',
-			"fmt": '?fmt=json'
+			"fmt": '?fmt=json',
+			"rel": '&inc=genres+ratings+artists+releases'
 		}
 		//
 		this.myCats = {
@@ -333,7 +334,7 @@ class Muzica {
 				// old searchs
 				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses])
 				//
-				this.debug ? console.log(this.reponseReq.recordings) : ''
+				// this.debug ? console.log(this.reponseReq.recordings) : ''
 				if (this.vinylButon && this.vinyl_searching) {
 					this.myOldVinyl(false)
 				}
@@ -341,10 +342,30 @@ class Muzica {
 				this.refresh_ResponsTable()
 			}
 		}
-		this.debug ? console.log('Recordings : ' + this.urlDemandee) : ''
+		this.debug ? console.log('get all Records at : ' + this.urlDemandee) : ''
 		MonPost.send()
 	}
 
+	get_ReqReleaseByRecordingsId(oneRecord){
+		let MonPost = new XMLHttpRequest()
+		let urlDemandee = 'https://musicbrainz.org/ws/2/recording/' + oneRecord.id + this.urlDatas['fmt'] + this.urlDatas['rel']
+		// 660404c9-a3e5-43c5-bd76-4339b00190e6?inc=genres+ratings+artists+releases
+
+		MonPost.open(this.urlDatas.methode, urlDemandee, true)
+		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+
+		MonPost.onreadystatechange = (e) => {
+			if (MonPost.readyState == 4 && MonPost.status == 200) {
+				let resultats = JSON.parse(MonPost.responseText)
+				// this.debug ? console.log('B resultats: ') : ''
+				// this.debug ? console.log(resultats) : ''
+				
+				this.make_Modal(resultats)
+			}
+		}
+		this.debug ? console.log('get all Releases from a Record_id at : ' + urlDemandee) : ''
+		MonPost.send()
+	}
 	get_ReqArtsByReleaseId(mbid) {
 		let MonPost = new XMLHttpRequest()
 		let urlDemandee = this.urlDatas['arts'] + mbid + this.urlDatas['fmt']
@@ -355,8 +376,8 @@ class Muzica {
 		MonPost.onreadystatechange = (e) => {
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
 				let resultats = JSON.parse(MonPost.responseText)
-				console.log('resultats: ')
-				console.log(resultats)
+				this.debug ? console.log('all images from Release_Id : '+ mbid) : ''
+				this.debug ? console.log(resultats) : ''
 				this.set_images(resultats, mbid)
 				return resultats
 			}
@@ -365,7 +386,7 @@ class Muzica {
 			}
 		}
 		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-		console.log('urlDemandee: ' + urlDemandee)
+		this.debug ? console.log('get all arts from a Release_id at : ' + urlDemandee) : ''
 		MonPost.send()
 	}
 
@@ -403,7 +424,7 @@ class Muzica {
 			let tbody = document.createElement("tbody")
 			let datas = this.reponseReq[this.reqActuel]
 			let ligneId = this.actualOffset
-			for (var dataPack of datas) {
+			for (var oneRecord of datas) {
 
 				let trbody = document.createElement("tr")
 				// line number col
@@ -413,12 +434,12 @@ class Muzica {
 				trbody.appendChild(item)
 				// artist col
 				item = document.createElement("td")
-				item.textContent = (dataPack['artist-credit'] && dataPack['artist-credit'][0]) ? dataPack['artist-credit'][0].name : 'vide'
-				item.setAttribute('title', 'artist-credit-id : ' + dataPack['artist-credit'][0]['artist']['id'])
+				item.textContent = (oneRecord['artist-credit'] && oneRecord['artist-credit'][0]) ? oneRecord['artist-credit'][0].name : 'vide'
+				item.setAttribute('title', 'artist-credit-id : ' + oneRecord['artist-credit'][0]['artist']['id'])
 				trbody.appendChild(item)
 				// title col
 				let itemtitle = document.createElement("td")
-				itemtitle.textContent = (dataPack['title']) ? dataPack['title'] : 'vide'
+				itemtitle.textContent = (oneRecord['title']) ? oneRecord['title'] : 'vide'
 
 
 				// album col
@@ -427,11 +448,11 @@ class Muzica {
 				// liste release album col
 				let nbreleased = 0
 				let nblines = 0
-				if (dataPack['releases']) {
+				if (oneRecord['releases']) {
 					let lesreleasesA = ''
 					let lesreleasesB = ''
-					for (var released in dataPack['releases']) {
-						let lesreleases = dataPack['releases'][released]
+					for (var released in oneRecord['releases']) {
+						let lesreleases = oneRecord['releases'][released]
 						lesreleasesA = lesreleasesA +
 							'' + lesreleases['title'] +
 							' (' + lesreleases['status'] + ')' +
@@ -449,31 +470,31 @@ class Muzica {
 				} else {
 					// no release
 				}
-				item.textContent = dataPack['title']
-				item.textContent = (dataPack['releases'] && dataPack['releases'][0]) 
-					? dataPack['releases'][0].title
+				item.textContent = oneRecord['title']
+				item.textContent = (oneRecord['releases'] && oneRecord['releases'][0]) 
+					? oneRecord['releases'][0].title
 					: this.nodata
 				trbody.appendChild(itemtitle)
 				trbody.appendChild(item)
 				// actions col
 				item = document.createElement("td")
 				item.className = 'actions'
-				let itembutton = document.createElement("button")
-				itembutton.setAttribute('recording_id', dataPack.id)
-				itembutton.setAttribute('title', 'release Id: ' +dataPack.id)
+					let itembutton = document.createElement("button")
+					itembutton.setAttribute('recording_id', oneRecord.id)
+					itembutton.setAttribute('title', 'release Id: ' +oneRecord.id)
 
-				if (dataPack['releases']) {
-					let leRelease = dataPack
-					itembutton.addEventListener('click', (e) => {
-						console.log('Ouverture modal > release : '+  dataPack.id)
-						this.make_Modal(leRelease)},
-						{once: false})
-				}
-								
-				itembutton.className = 'btn btn-dark'
-				let iconebutton = document.createElement("i")
-				iconebutton.className = this.iconeVoirAlbum + ' voirlafiche'
-				itembutton.appendChild(iconebutton)
+					if (oneRecord['releases']) {
+						let record = oneRecord
+						itembutton.addEventListener('click', (e) => {
+							this.get_ReqReleaseByRecordingsId(record)
+						},
+							{once: false})
+					}
+									
+					itembutton.className = 'btn btn-dark'
+						let iconebutton = document.createElement("i")
+						iconebutton.className = this.iconeVoirAlbum
+						itembutton.appendChild(iconebutton)
 				item.appendChild(itembutton)
 
 				trbody.appendChild(item)
@@ -486,8 +507,13 @@ class Muzica {
 			return 'vide'
 		}
 	}
+
+
 	make_Modal(lesreleases) {
+		this.debug ? console.log('lesreleases') : ''
 		this.debug ? console.log(lesreleases) : ''
+		
+
 		if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
 			modalalbum.id = "rel_modal"
@@ -506,42 +532,57 @@ class Muzica {
 			this.modal_AddContent(true, 'div', 'rel-contenu-modal', null, 'rel-modal-contenu-contenu', 'rel-modal-contenu-contenu')
 				this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', "Informations", 'rel-modal-contenu-contenu-info', 'rel-modal-contenu-contenu-info')
 
-					let rec_score = lesreleases['score'] ? lesreleases['score'] : false
-					let rec_length = lesreleases['length'] ? lesreleases['length'] : false
-					let rec_isrcs = lesreleases['isrcs'] ? lesreleases['isrcs'] : false
-					let rec_id = lesreleases['id'] ? lesreleases['id'] : false
-					let rec_artistcredit = lesreleases['artist-credit'] ? lesreleases['artist-credit'] : false
-					let rec_video = lesreleases['video'] ? lesreleases['video'] : false
+					// let rec_score = lesreleases['score'] ? lesreleases['score'] : false
+					// rec_score ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Score: " + rec_score + '%', 'modalscore', 'rel-modal-contenu-contenu-info-item') : 'vide'
+					// let rec_isrcs = lesreleases['isrcs'] ? lesreleases['isrcs'] : false
+					// this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "isrcs: " + (rec_isrcs ? rec_isrcs : 'vide'), 'modalisrcs', 'rel-modal-contenu-contenu-info-item')
 
-					this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "id: " + (rec_id ? rec_id : 'vide'), 'modalid', 'rel-modal-contenu-contenu-info-item')
-					this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "isrcs: " + (rec_isrcs ? rec_isrcs : 'vide'), 'modalisrcs', 'rel-modal-contenu-contenu-info-item')
-					rec_score ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Score: " + rec_score + '%', 'modalscore', 'rel-modal-contenu-contenu-info-item') : 'vide'
+					lesreleases['title']
+					
+					let rec_title = lesreleases['title'] ? lesreleases['title'] : false
+					rec_title ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Title: " + rec_title + '.', 'modaltitle', 'rel-modal-contenu-contenu-info-item') : 'vide'
+					
+					let rec_artistcredit = lesreleases['artist-credit'] ? lesreleases['artist-credit'] : false
 					rec_artistcredit ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Artists: " + this.getall_tag(rec_artistcredit, 'name') + '.', 'modalartists', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + rec_length + '/' + this.make_Pylformat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
-					rec_video ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Video: " + rec_video, 'modalvideo', 'rel-modal-contenu-contenu-info-item') : ''
+					
+					// let rec_id = lesreleases['id'] ? lesreleases['id'] : false
+					// this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "id: " + (rec_id ? rec_id : 'vide'), 'modalid', 'rel-modal-contenu-contenu-info-item')
+
+					let rec_genres = lesreleases['genres'] ? lesreleases['genres'] : false
+					rec_genres ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Genres: " + this.getall_tag(rec_genres, 'name') + '.', 'modalgenres', 'rel-modal-contenu-contenu-info-item') : 'vide'
+					
+					
+					let rec_length = lesreleases['length'] ? lesreleases['length'] : false
+					rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + this.make_Pylformat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
+					
+					let rec_rating = lesreleases['rating'] ? lesreleases['rating'].value : 0
+					let rec_votescount = lesreleases['votes-count'] ? lesreleases['votes-count'].value : 0
+					rec_rating ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Rating value: " + rec_rating, 'modalrating', 'rel-modal-contenu-contenu-info-item') : ''
+					this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Note : " + this.set_Stars(rec_votescount), 'modalnote', 'rel-modal-contenu-contenu-info-item')
+
+					// let rec_video = lesreleases['video'] ? lesreleases['video'] : false
+					// rec_video ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Video: " + rec_video, 'modalvideo', 'rel-modal-contenu-contenu-info-item') : ''
 
 				// RELEASES
 				this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', '', 'lesreleases', 'lesreleases')
 				let relCount = 0
 				for (let released in lesreleases['releases'])
 				{
-					let lereleased = lesreleases['releases'][released]
+					let lereleased = lesreleases['releases'][released]	
+					// let rel_count = lereleased['count'] ? lereleased['count'] : false
+					//this.modal_AddContent(true, 'div', rel_divid, "Count: " + (rel_count ? rel_count : 'vide'), 'modal-rel-count-' + relCount, 'modalinfo-item')
 					let rel_divid = 'release-' + lereleased['id']
 					let rel_title = lereleased['title'] ? lereleased['title'] : false
-					let rel_count = lereleased['count'] ? lereleased['count'] : false
-					let rel_id = lereleased['id'] ? lereleased['id'] : false
-					let rel_artistcredit = lereleased['artist-credit'] ? lereleased['artist-credit'] : false	
-					
 					let titlerelease = document.createElement("h6")
 					titlerelease.className = "modal-rel-title"
-					titlerelease.textContent =  relCount + ") Release Title: " + ((rel_title) ? rel_title : 'vide')
-
+					titlerelease.textContent =  " Album : " + ((rel_title) ? rel_title : 'vide')
 					this.modal_AddContent(true, 'div', 'lesreleases', titlerelease , rel_divid, 'unerelease')
-
-					this.modal_AddContent(true, 'div', rel_divid, "Id: " + (rel_id ? rel_id : 'vide'), 'modal-rel-id-' + relCount, 'modalinfo-item')
-					this.modal_AddContent(true, 'div', rel_divid, "Count: " + (rel_count ? rel_count : 'vide'), 'modal-rel-count-' + relCount, 'modalinfo-item')
-					this.modal_AddContent(true, 'div', rel_divid, "Release Artists: " + (rel_artistcredit ? this.getall_tag(rel_artistcredit, 'name') + '.' : 'vide'), 'modal-rel-artist-' + relCount, 'modalinfo-item')
-
+					// let rel_id = lereleased['id'] ? lereleased['id'] : false
+					// this.modal_AddContent(true, 'div', rel_divid, "Id: " + (rel_id ? rel_id : 'vide'), 'modal-rel-id-' + relCount, 'modalinfo-item')
+					// let rec_genres = lereleased['genres'] ? lereleased['genres'] : 'vide'
+					// rec_genres ? this.modal_AddContent(true, 'div', rel_divid, "Genres: " + this.getall_tag(rec_genres, 'name') + '.', 'modalgenres', 'modalinfo-item') : 'vide'
+					// let rel_artistcredit = lereleased['artist-credit'] ? lereleased['artist-credit'] : false	
+					// this.modal_AddContent(true, 'div', rel_divid, "Release Artists: " + (rel_artistcredit ? this.getall_tag(rel_artistcredit, 'name') + '.' : 'vide'), 'modal-rel-artist-' + relCount, 'modalinfo-item')
 						let rel_country = lereleased['country'] ? lereleased['country'] : false
 						let rel_date = lereleased['date'] ? lereleased['date'] : false
 						let rel_disambiguation = lereleased['disambiguation'] ? lereleased['disambiguation'] : false
@@ -550,15 +591,15 @@ class Muzica {
 						rel_date ?						this.modal_AddContent(true, 'div', rel_divid, "date: " + rel_date, 'modal-rel-date-' + relCount, 'modalinfo-item') : 'vide'
 						rel_disambiguation ? 	this.modal_AddContent(true, 'div', rel_divid, "disambiguation: " + rel_disambiguation, 'modal-rel-disambiguation-' + relCount, 'modalinfo-item') : 'vide'
 						rel_trackcount ? 			this.modal_AddContent(true, 'div', rel_divid, "track-count: " + rel_trackcount, 'modal-rel-trackcount-' + relCount, 'modalinfo-item') : 'vide'
-
 					// ARTS
 					let art_divid = 'arts-' + lereleased['id']
 					this.modal_AddContent(true, 'div', rel_divid, '', art_divid, 'arts')
+					
 					this.get_ReqArtsByReleaseId(lereleased['id'])
 
 					relCount++
 				}
-			this.modal_AddHeader('div', 'rel-contenu-modal', (lesreleases['artist-credit'] && lesreleases['artist-credit'][0]) ? 'Record: ' + lesreleases['artist-credit'][0].name + '-' + lesreleases['title'] : 'vide')
+			this.modal_AddHeader('div', 'rel-contenu-modal', (lesreleases['artist-credit'] && lesreleases['artist-credit'][0]) ? lesreleases['artist-credit'][0].name + ' - ' + lesreleases['title'] : 'vide')
 			this.modal_AddFooter('div', 'rel-contenu-modal')
 		}
 	}
@@ -622,6 +663,11 @@ class Muzica {
 			Cible.appendChild(modalfooter)
 		}
 	}
+
+	set_imagesTempo(mbid) {
+		this.modal_AddContent(true, 'div', 'arts-' + mbid, this.modal_AddImage('toto', 'modal-vignette-tempo', mbid), 'tempo-' + mbid, 'modalinfo-item')
+		ajout.src = 'assets/theme/spinner.jpg'
+	}
 	ModalAddImage(lurl, laClass, mbid) {
 		let ajout = document.createElement('img')
 		ajout.id = 'vig-' + mbid
@@ -629,6 +675,11 @@ class Muzica {
 		ajout.style.width = '250px'
 		ajout.src = lurl
 		return ajout
+		// var img = new Image();
+		// img.onload = function() {
+		// 	document.querySelector('#vig-' + mbid).src = lurl
+		// }
+		// img.src = lurl
 	}
 	modal_AddContent(pos = false, tag, destId, leString, lId, laClass, lIcone = null) {
 		let Cible = document.querySelector('#' + destId)
@@ -782,13 +833,6 @@ class Muzica {
 		}
 	}
 
-	// tools
-	// debuglog(string,title=null,top,data){
-	// 	//➡ ➲ 📋  🖮
-	// 	this.debug && title ? console.log('🔍'+title) : ''
-	// 	this.debug ? console.log(string) : ''
-	// 	// this.debug && title ? console.groupEnd() : ''
-	// }
 	getall_artistcredit(index, le_name) {
 		if (index.length > 0) {
 			let retour = []
@@ -839,8 +883,8 @@ class Muzica {
     let seconds = 0
     if (number) {
 				number /= 1000;
-        seconds = Math.floor(number % 60) > 0 ? `${Math.floor(number % 60)}s` : ''
-        minutes = Math.floor(number / 60) > 0 ? `${Math.floor(number / 60)}min` : ''
+        seconds = Math.floor(number % 60) > 0 ? `${Math.floor(number % 60)}` : ''
+        minutes = Math.floor(number / 60) > 0 ? `${Math.floor(number / 60)}:` : ''
         return minutes + seconds
     }
 		return null
@@ -856,7 +900,13 @@ class Muzica {
 
 	// todo 
 	set_Stars(score) {
-		// todo			
+		let empty = "☆"
+		let full = "★"
+		let stars = ''
+		for(let i= 0;i < 5; i++){
+			stars += score>i ? full : empty
+		}
+		return stars
 	}
 }
 
