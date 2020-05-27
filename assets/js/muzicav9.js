@@ -333,8 +333,7 @@ class Muzica {
 				// old searchs
 				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses])
 				//
-				console.log('Recordings : ')
-				console.log(this.reponseReq.recordings)
+				this.debug ? console.log(this.reponseReq.recordings) : ''
 				if (this.vinylButon && this.vinyl_searching) {
 					this.myOldVinyl(false)
 				}
@@ -342,7 +341,7 @@ class Muzica {
 				this.refresh_ResponsTable()
 			}
 		}
-		console.log('Recordings : ' + this.urlDemandee)
+		this.debug ? console.log('Recordings : ' + this.urlDemandee) : ''
 		MonPost.send()
 	}
 
@@ -470,39 +469,7 @@ class Muzica {
 						this.make_Modal(leRelease)},
 						{once: false})
 				}
-
-				// // ici dataPack passe bien dans make_Modal() mais je crée leRelease pour le faire passer
-				// if (dataPack['releases']) {
-				// 	let leRelease = dataPack
-				// 	itembutton.addEventListener('click', (e) => {
-				// 		this.make_Modal(LeRelease)},{once: false}
-				// )}
-
-				// // ici j'ai fais le ménage et paf ca passe pas en direct !! 
-				// // MAIS WHY DONC ?
-				// if (dataPack['releases']) {
-				// 	itembutton.addEventListener('click', (e) => {
-				// 		this.make_Modal(dataPack)},{once: false}
-				// )}
 								
-												
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 				itembutton.className = 'btn btn-dark'
 				let iconebutton = document.createElement("i")
 				iconebutton.className = this.iconeVoirAlbum + ' voirlafiche'
@@ -520,8 +487,7 @@ class Muzica {
 		}
 	}
 	make_Modal(lesreleases) {
-		console.log('make_Modal lesreleases')
-		console.log(lesreleases)
+		this.debug ? console.log(lesreleases) : ''
 		if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
 			modalalbum.id = "rel_modal"
