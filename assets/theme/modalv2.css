@@ -186,8 +186,21 @@
 	overflow: hidden;
 }
 .unerelease img{
-	width: 500px;
+	width: 250px;
 	transition: min-width var(--regen) ease-in;
+}
+
+.unerelease .modal-vignette.loading{
+	border: 5px;
+	animation: loadingrotation 2s linear infinite;
+}
+@keyframes loadingrotation {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 .unerelease h6{
 	background-color: rgba(255, 255, 255, 0.178);
@@ -195,6 +208,7 @@
 	margin-bottom: 3px;
 	padding : 5px 10px;
 }
+
 
 @media (max-width: 575px) {
   .rel-modal-cadre{

@@ -7,7 +7,8 @@ class Muzica {
 		console.log('https://github.com/patobeur/Muzica')
 		console.log('Thx you DWWM2 2020')
 		console.log('Full hugs from P4t0b3ur !!!')
-		this.showOldSearch = false // to do
+		this.showOldSearch = true // to do
+		this.oldSearch = []
 
 		this.debug = true // affiche en console si true
 		this.modalFooter = false // youtube & close bottom buttons on modal layout
@@ -40,7 +41,6 @@ class Muzica {
 		this.nbReponses = 0
 		this.nodata = 'no data'
 
-		this.lesAnciennesRecherches = []
 		this.urlmbid = ''
 		this.mbid = ''
 		//
@@ -48,9 +48,9 @@ class Muzica {
 			"methode": 'GET',
 			"url": 'https://musicbrainz.org/ws/2/',
 			"inc": '/?fmt=json' + '&query=',
+			"rel": '&inc=genres+ratings+artists+releases+annotation',
 			"arts": 'https://coverartarchive.org/release/',
-			"fmt": '?fmt=json',
-			"rel": '&inc=genres+ratings+artists+releases'
+			"fmt": '?fmt=json'
 		}
 		//
 		this.myCats = {
@@ -94,13 +94,17 @@ class Muzica {
 		console.groupEnd()
 	}
 	set_OldSearch(datas) {
-		this.lesAnciennesRecherches.push({
-			"date": this.get_Date(),
-			"recherche": (datas[0] ? datas[0] : null),
-			"url": (datas[1] ? datas[1] : null),
-			"nbreponse": (datas[2] ? datas[2] : null),
-			"select": (datas[3] ? datas[3] : null)
-		})
+		this.oldSearch.push(
+			{
+				"date": this.get_Date(),
+				"recherche": (datas[0] ? datas[0] : null),
+				"url": (datas[1] ? datas[1] : null),
+				"nbreponse": (datas[2] ? datas[2] : null),
+				"select": (datas[3] ? datas[3] : null)
+			}
+		)
+		// this.debug ? console.log("oldSearch") : ''
+		// this.debug ? console.log(this.oldSearch) : ''
 	}
 	// HERE WE LISTEN DIF-PARTS OF THE PAGE
 	listener() {
@@ -290,7 +294,7 @@ class Muzica {
 		if (resultats && resultats['images']) {
 			console.log(resultats.images.length + ' image(s)')
 			for (var i in resultats.images) {
-				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.ModalAddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid), 'image-' + mbid, 'modalinfo-item') : ''
+				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.ModalAddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid,resultats.images[i].id), 'image-' + mbid, 'modalinfo-item') : ''
 			}
 		}
 	}
@@ -332,7 +336,7 @@ class Muzica {
 				// set nb response for pagination
 				this.set_This('get_ReqRecordings', 'nbReponses', this.reponseReq.count)
 				// old searchs
-				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses])
+				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses, this.maSelection])
 				//
 				// this.debug ? console.log(this.reponseReq.recordings) : ''
 				if (this.vinylButon && this.vinyl_searching) {
@@ -512,8 +516,6 @@ class Muzica {
 	make_Modal(lesreleases) {
 		this.debug ? console.log('lesreleases') : ''
 		this.debug ? console.log(lesreleases) : ''
-		
-
 		if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
 			modalalbum.id = "rel_modal"
@@ -668,18 +670,21 @@ class Muzica {
 		this.modal_AddContent(true, 'div', 'arts-' + mbid, this.modal_AddImage('toto', 'modal-vignette-tempo', mbid), 'tempo-' + mbid, 'modalinfo-item')
 		ajout.src = 'assets/theme/spinner.jpg'
 	}
-	ModalAddImage(lurl, laClass, mbid) {
+	ModalAddImage(lurl, laClass, mbid, imgid) {
 		let ajout = document.createElement('img')
-		ajout.id = 'vig-' + mbid
-		ajout.className = laClass
-		ajout.style.width = '250px'
-		ajout.src = lurl
+		ajout.id = 'vig-' + imgid
+		ajout.className = laClass + ' loading'
+		// ajout.style.width = '50px'
+		ajout.src = 'assets/theme/loading.svg'
+		var img = new Image();
+		img.onload = function() {
+			// document.querySelector('#vig-' + imgid).style.width.unset()
+			document.querySelector('#vig-' + imgid).src = lurl
+			document.querySelector('#vig-' + imgid).classList.remove('loading')
+			// ajout.src = lurl
+		}
+		img.src = lurl
 		return ajout
-		// var img = new Image();
-		// img.onload = function() {
-		// 	document.querySelector('#vig-' + mbid).src = lurl
-		// }
-		// img.src = lurl
 	}
 	modal_AddContent(pos = false, tag, destId, leString, lId, laClass, lIcone = null) {
 		let Cible = document.querySelector('#' + destId)
