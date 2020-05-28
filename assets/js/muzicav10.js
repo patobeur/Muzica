@@ -675,7 +675,7 @@ class Muzica {
 		ajout.id = 'vig-' + imgid
 		ajout.className = laClass + ' loading'
 		// ajout.style.width = '50px'
-		ajout.src = 'assets/theme/loading.svg'
+		ajout.src = 'assets/theme/loading3.svg'
 		var img = new Image();
 		img.onload = function() {
 			// document.querySelector('#vig-' + imgid).style.width.unset()
