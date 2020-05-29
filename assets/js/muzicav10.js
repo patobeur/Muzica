@@ -192,7 +192,7 @@ class Muzica {
 			// pagination group
 			let pagination = document.createElement("nav")
 			pagination.id = 'pagination'
-			pagination.className = 'pagination justify-content-center'
+			pagination.className = 'pagination'
 			pagination.setAttribute('aria-label', 'Page navigation example')
 			// pagination button group
 			let pag_buttons = document.createElement("ul")
@@ -207,7 +207,7 @@ class Muzica {
 			pag_previous_link.setAttribute('aria-disabled', 'true')
 
 
-			pag_previous_link.textContent = 'Previous'
+			pag_previous_link.textContent = '<<'
 			pag_previous.appendChild(pag_previous_link)
 			if (this.actualOffset > this.limitPerPage + 1) {
 				pag_previous.addEventListener('click', (e) => {
@@ -248,7 +248,7 @@ class Muzica {
 			let pag_next_link = document.createElement("a")
 			pag_next_link.className = 'page-link'
 			pag_next_link.setAttribute('href', '#')
-			pag_next_link.textContent = 'Next'
+			pag_next_link.textContent = '>>'
 			pag_next.appendChild(pag_next_link)
 			if (this.actualOffset < (this.nbReponses - this.limitPerPage)) {
 				pag_next.addEventListener('click', (e) => {

@@ -1,0 +1,109 @@
+
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+	border-radius: 0.35rem;
+	align-self: center;
+}
+
+.pagination, a:link, .pagination a:visited{
+	color: rgb(0, 37, 250);
+}
+.pagination a:link{
+	color: rgb(0, 0, 0);
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 0;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #4e73df;
+  background-color: #fff;
+  border: 1px solid #dddfeb;
+}
+
+.page-link:hover {
+  z-index: 2;
+  color: #224abe;
+  text-decoration: none;
+  background-color: #eaecf4;
+  border-color: #dddfeb;
+}
+
+.page-link:focus {
+  z-index: 2;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.page-item:first-child .page-link {
+  margin-left: 0;
+  border-top-left-radius: var(--pagination_radius);
+  border-bottom-left-radius: var(--pagination_radius);
+}
+
+.page-item:last-child .page-link {
+  border-top-right-radius: var(--pagination_radius);
+  border-bottom-right-radius: var(--pagination_radius);
+}
+
+.page-item.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #4e73df;
+  border-color: #4e73df;
+}
+
+.page-item.disabled .page-link {
+  color: #858796;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: #dddfeb;
+}
+
+.pagination-lg .page-link {
+  padding: 0.75rem .5rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.pagination-lg .page-item:first-child .page-link {
+  border-top-left-radius: var(--pagination_radius);
+  border-bottom-left-radius: var(--pagination_radius);
+}
+
+.pagination-lg .page-item:last-child .page-link {
+  border-top-right-radius: var(--pagination_radius);
+  border-bottom-right-radius:var(--pagination_radius);
+}
+
+.pagination-sm .page-link {
+  padding: 0.2rem 0.3rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.pagination-sm .page-item:first-child .page-link {
+  border-top-left-radius: var(--pagination_radius);
+  border-bottom-left-radius: var(--pagination_radius);
+}
+
+.pagination-sm .page-item:last-child .page-link {
+  border-top-right-radius: var(--pagination_radius);
+  border-bottom-right-radius: var(--pagination_radius);
+}
+
+.page-item.active .page-link {
+	z-index: 0;
+}
+.pagination-sm .page-item:not(.active) .page-link:hover {
+	padding: 0.2rem 0.8rem;
+	background-color: var(--pagination_bg_hover);
+	color:white;
+	border-color: rgb(29, 29, 29);
+	font-weight: 600;
+}
