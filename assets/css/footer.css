@@ -1,0 +1,48 @@
+#pagefooter {
+	display: inline-block;
+	padding: 0;
+	text-align: center;
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	height: 30px;
+}
+#pagefooter .boutton {
+	color: #fff;
+	display: inline-flex;
+	align-self: top;
+	font-weight: 400;
+	vertical-align: top;
+	font-size: 1rem;
+	line-height: 1rem;
+	border-radius: 0.3rem;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border: 0 solid transparent;
+	padding: .5rem .75rem 0;
+	border-bottom: 0;
+	margin: 0 .2rem;
+	height:80px;
+	background-color: #000000da;
+	transition: margin 1s ease-out;
+}
+#pagefooter .boutton i {
+	margin-right: 5px;
+}
+#pagefooter .boutton.up{
+	background-color: #ffffff;
+	color: #000000;
+	outline: #000000;
+	margin-top: -20px;
+	transition: margin-top 0.3s ease;
+}
+#pagefooter .boutton:not(.up):hover {
+	background-color: #ffffff;
+	color: #000000;
+	outline: #000000;
+	margin-top: -20px;
+	transition: margin-top 0.2s ease;
+}
+

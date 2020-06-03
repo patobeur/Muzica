@@ -1,10 +1,20 @@
-
+.pagination-groupe{
+  position: relative;
+  align-self: center;
+  padding:0;
+  margin:0;
+}
 .pagination {
+  position: sticky;
+  bottom:50px;
   display: flex;
+  width: min-content;
   padding-left: 0;
   list-style: none;
 	border-radius: 0.35rem;
-	align-self: center;
+  background-color: rgb(71, 255, 80);
+  padding:0;
+  margin:0;
 }
 
 .pagination, a:link, .pagination a:visited{
@@ -49,6 +59,9 @@
   border-top-right-radius: var(--pagination_radius);
   border-bottom-right-radius: var(--pagination_radius);
 }
+
+
+
 
 .page-item.active .page-link {
   z-index: 1;

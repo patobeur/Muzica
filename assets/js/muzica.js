@@ -2,15 +2,13 @@
 class Muzica {
 	constructor(muzica) {
 		this.Version = 10
-		console.groupCollapsed('api version ' + this.Version + ' vanilla js')
-		console.log('ecf javascript 2020')
-		console.log('https://github.com/patobeur/Muzica')
-		console.log('Thx you DWWM2 2020')
-		console.log('Full hugs from P4t0b3ur !!!')
+		this.debug = false // affiche en console si true
+		this.debug ? console.groupCollapsed('api version ' + this.Version + ' vanilla js') : ''
+		this.debug ? console.log('source: https://github.com/patobeur/Muzica') : ''
+		// this.debug ? console.log('Full hugs from |º47083µЯ !!!') : ''
 		this.showOldSearch = true // to do
 		this.oldSearch = []
 
-		this.debug = true // affiche en console si true
 		this.modalFooter = false // youtube & close bottom buttons on modal layout
 		this.nbSubmitDie = 5 // nb max de submit si recherche vide avant de bloquer
 		this.vinylButon = true // n'apparait pas lors de la recherche si true 
@@ -91,21 +89,9 @@ class Muzica {
 				"iconeclass": "fas fa-album-collection"
 			}
 		}
-		console.groupEnd()
+		this.debug ? console.groupEnd() : ''
 	}
-	set_OldSearch(datas) {
-		this.oldSearch.push(
-			{
-				"date": this.get_Date(),
-				"recherche": (datas[0] ? datas[0] : null),
-				"url": (datas[1] ? datas[1] : null),
-				"nbreponse": (datas[2] ? datas[2] : null),
-				"select": (datas[3] ? datas[3] : null)
-			}
-		)
-		// this.debug ? console.log("oldSearch") : ''
-		// this.debug ? console.log(this.oldSearch) : ''
-	}
+
 	// HERE WE LISTEN DIF-PARTS OF THE PAGE
 	listener() {
 		// Listening hover submit
@@ -113,54 +99,64 @@ class Muzica {
 			let notempty = document.querySelector('#' + this.inputSearch).value != '' ? true : false
 			this.set_submit_onoff(notempty)
 		})
-		// Listening Keaboard
+		// Listening Keyboard
 		document.addEventListener('keydown', (e) => {
 				let modal = document.querySelector('#'+this.modalName);
 				// escape close the modal
 				if (e.keyCode === 27 && modal) {
 					modal.parentNode.removeChild(modal)
 				}
-			}
-		);
+		})
 		// Listening submit
 		document.querySelector('#' + this.formName).addEventListener('submit', (event) => {
 				event.preventDefault()
-				this.reinit_search() // remise a zero
+				this.set_InitialSearch() // remise a zero
 				// if (this.is_Actif()) {
 					// getting search words in input
 					let marecherche = document.querySelector('#' + this.inputSearch).value;
 					if (marecherche && marecherche != '') {
 						this.set_This('Listener', 'actualOffset', 0)
 						this.set_This('Listener:', 'maRecherche', this.set_CleanString(marecherche))
-						this.get_ReqRecordings()
+						this.get_Recordings()
 					} else {
 					}
 				// }
-			}
-		)
+		})
 		// Listening selects menu
 		document.querySelector('#' + this.inputSelect).addEventListener('change', (event) => {
-			console.clear()
-			let index = event.target.selectedIndex
-			document.querySelector('.searchbloc').style.marginTop = null
-			let ladiv = document.querySelector('#' + this.inputSelect)
-			let maSelection = this.set_CleanString(event.target.value)
-			if (maSelection && maSelection != '') {
-				this.set_This('Listener', 'maSelection', maSelection)
-				this.set_This('set_CleanNewSearch', 'actualOffset', 0)
-				this.set_CleanNewSearch()
-				event.target[index].setAttribute('selected', true)
+			let changed = event.target.options[event.target.selectedIndex].value;
+			let changed2 = event.target.options[event.target.selectedIndex].index;
+			event.target.options[changed2].selected = 'selected'
+			console.log(changed)
+			console.log(changed2)
+			// this.debug ? console.clear() : ''
+			// let index = event.target.selectedIndex
+			// document.querySelector('.searchbloc').style.marginTop = null
+			// // let ladiv = document.querySelector('#' + this.inputSelect)
+			// let maSelection = this.set_CleanString(event.target.value)
+			// console.log("maSelection:" + maSelection) 
+			// if (maSelection && maSelection != '') {
+			// 	this.set_This('Listener', 'maSelection', maSelection)
+			// 	this.set_This('set_CleanNewSearch', 'actualOffset', 0)
+			// 	this.set_CleanNewSearch()
+			// 	console.log("index:" + index) 
+			// 	event.target[index].setAttribute('selected', true)
 				
-			}
-			document.querySelector('#' + this.inputSelect).blur()
+			// }
+			// document.querySelector('#' + this.inputSelect).blur()
 		})
 		// spinner on off
-		document.querySelector('#vinyl-bouton').addEventListener('click', (event) => {
+		document.querySelector('#vinyl-bouton').addEventListener('click', (e) => {
 			this.myOldVinylButon()
 		})
 	}
 
 	// Setters
+	set_This(Func, Nom, Value) {
+		// var oldValue = this[Nom]
+		//this.debug ? console.log('(' + Func + ') set_(' + Nom + ': "' + oldValue + '" to "' + Value + '")') : ''
+		this[Nom] = Value
+	}
 	set_submit_onoff(notempty) {
 		if (notempty){
 			document.querySelector('#' + this.inputSearch).classList.remove('empty')
@@ -180,26 +176,27 @@ class Muzica {
 
 		
 	}
+	del_TagById(tagId){
+		let aEffacer = document.querySelector('#'+tagId)
+		aEffacer ? aEffacer.parentNode.removeChild(aEffacer) : ''
+	}
 	set_Pagination() {
-		let bloc = ''
 		if (this.nbReponses < 1) {
-			if (document.querySelector('#pagination')) {
-				let aEffacer = document.querySelector('#pagination')
-				aEffacer.parentNode.removeChild(aEffacer)
-			}
+				this.del_TagById('pagination')
 		}
 		else if (this.nbReponses > this.limitPerPage){
 			// pagination group
 			let pagination = document.createElement("nav")
 			pagination.id = 'pagination'
-			pagination.className = 'pagination'
+			pagination.className = 'pagination-groupe'
 			pagination.setAttribute('aria-label', 'Page navigation example')
 			// pagination button group
 			let pag_buttons = document.createElement("ul")
 			pag_buttons.className = 'pagination justify-content-end pagination-sm'
+
 			// previous
 			let pag_previous = document.createElement("li")
-			pag_previous.className = 'page-item' + (this.actualOffset < this.limitPerPage + 1 ? ' disabled' : '')
+			pag_previous.className = 'page-item' + (this.actualOffset < this.limitPerPage ? ' disabled' : '')
 			let pag_previous_link = document.createElement("a")
 			pag_previous_link.className = 'page-link'
 			pag_previous_link.setAttribute('href', '#')
@@ -209,19 +206,21 @@ class Muzica {
 
 			pag_previous_link.textContent = '<<'
 			pag_previous.appendChild(pag_previous_link)
-			if (this.actualOffset > this.limitPerPage + 1) {
+			if (this.actualOffset >= this.limitPerPage) {
 				pag_previous.addEventListener('click', (e) => {
 						this.set_This('set_Pagination', 'actualOffset', (this.actualOffset - this.limitPerPage))
-						this.get_ReqRecordings()
+						this.get_Recordings()
 					},{once: false}
 				)
 			}
 			pag_buttons.appendChild(pag_previous)
+			
 			// page link
 			this.nbPages = Math.trunc((this.nbReponses / this.limitPerPage))
 			let max = (this.nbPages > 1) ? (this.nbPages < 10) ? this.nbPages + 1 : 10 : this.nbPages
 			for (let i = 0; i < max; i++) {
-				let title = 'page ' + ((this.limitPerPage * i) + 1) + ' à ' + ((this.limitPerPage * (i + 1)) + 1)
+				let title = 'page ' + (i+1)
+				// let title = 'page ' + ((this.limitPerPage * i) + ) + ' à ' + ((this.limitPerPage * (i + 1)) + 1)
 				let pag_button = document.createElement("li")
 				pag_button.className = 'page-item' + ((((this.limitPerPage * i) + 1) == this.actualOffset) ? ' active' : '')
 
@@ -229,13 +228,14 @@ class Muzica {
 				pag_button_link.className = 'page-link'
 				pag_button_link.setAttribute('href', '#')
 				pag_button_link.setAttribute('title', title)
-				pag_button_link.textContent = ((this.limitPerPage * i) + 1)
+				pag_button_link.textContent = ((this.limitPerPage * i) )
 
 				pag_button.appendChild(pag_button_link)
 
 				pag_button.addEventListener('click', (e) => {
-						this.set_This('set_Pagination', 'actualOffset', ((this.limitPerPage * i) + 1))
-						this.get_ReqRecordings()
+						this.set_This('set_Pagination', 'actualOffset', ((this.limitPerPage * i) ))
+						document.querySelector('#contents').scrollTo(0,0)
+						this.get_Recordings()
 					},
 					{once: false}
 				)
@@ -253,25 +253,44 @@ class Muzica {
 			if (this.actualOffset < (this.nbReponses - this.limitPerPage)) {
 				pag_next.addEventListener('click', (e) => {
 						this.set_This('set_Pagination', 'actualOffset', (this.limitPerPage + this.actualOffset))
-						this.get_ReqRecordings()
+						this.get_Recordings()
 					},
 					{once: false}
 				)
 			}
 			pag_buttons.appendChild(pag_next)
+			// END
+			//
+			let pag_end = document.createElement("li")
+			pag_end.className = 'page-item' + (this.actualOffset <= (this.nbReponses - this.limitPerPage) ? '' : ' disabled')
+			let pag_end_link = document.createElement("a")
+			pag_end_link.className = 'page-link'
+			pag_end_link.setAttribute('href', '#')
+			pag_end_link.textContent = 'end'
+			pag_end.appendChild(pag_end_link)
+			if (this.actualOffset < (this.nbReponses - this.limitPerPage)) {
+				pag_end.addEventListener('click', (e) => {
+						this.set_This('set_Pagination', 'actualOffset', (    Math.floor(this.nbReponses / this.limitPerPage)*this.limitPerPage ))
+						this.get_Recordings()
+					},
+					{once: false}
+				)
+			}
+			pag_buttons.appendChild(pag_end)
 			pagination.appendChild(pag_buttons)
 			// 
 			if (document.querySelector('#pagination')) {
-				let aEffacer = document.querySelector('#pagination')
-				aEffacer.parentNode.removeChild(aEffacer)
-				document.querySelector('#cardtable').prepend(pagination)
+				
+				this.del_TagById('pagination')
+				// let aEffacer = document.querySelector('#pagination')
+				// aEffacer.parentNode.removeChild(aEffacer)
+				document.querySelector('#cardtable').appendChild(pagination)
 			}
 			else {
-				document.querySelector('#cardtable').prepend(pagination)
+				document.querySelector('#cardtable').appendChild(pagination)
 			}
 		}
 	}
-
 	set_FullUrl() {
 		let limit = "&limit=" + this.limitPerPage;
 		let fullsearch = '';
@@ -284,21 +303,22 @@ class Muzica {
 		}
 		this.set_This('set_FullUrl', 'urlDemandee', this.urlDatas.url + this.typeActuel + this.urlDatas.inc + fullsearch + limit + '&offset=' + this.actualOffset)
 	}
-
 	set_NbSubmitPlus1() {
 		this.nbSubmit = this.nbSubmit + 1
 	}
-
-
+	/**
+ * set a new image
+ * @param resultats indexed datas
+ * @param mbid mbid
+ */
 	set_images(resultats, mbid) {
 		if (resultats && resultats['images']) {
-			console.log(resultats.images.length + ' image(s)')
+			this.debug ? console.log(resultats.images.length + ' image' + (resultats.images.length > 0 ? 's' : '') ) : ''
 			for (var i in resultats.images) {
-				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.ModalAddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid,resultats.images[i].id), 'image-' + mbid, 'modalinfo-item') : ''
+				resultats.images[i].thumbnails.small ? this.modal_AddContent(true, 'div', 'arts-' + mbid, this.modal_AddImage(resultats.images[i].thumbnails.small, 'modal-vignette', mbid,resultats.images[i].id), 'image-' + mbid, 'modalinfo-item') : ''
 			}
 		}
 	}
-
 	set_CleanString(value) {
 		if (value != '' && value != false && value != null) {
 			if (value.length < 1) return false // 'to shorty';
@@ -306,7 +326,6 @@ class Muzica {
 			return encodeURIComponent(value)
 		}
 	}
-
 	set_CleanNewSearch() {
 		this.set_This('set_CleanNewSearch', 'typeActuel', this.myCats[this.maSelection].type)
 		this.set_This('set_CleanNewSearch', 'reqActuel', this.myCats[this.maSelection].SearchCategorie)
@@ -314,13 +333,38 @@ class Muzica {
 		this.set_This('set_CleanNewSearch', 'reponseHtml', '')
 		this.set_This('set_CleanNewSearch', 'reponseReq', '')
 	}
+	set_OldSearch(datas) {
+		this.oldSearch.push(
+			{
+				"date": this.get_Date(),
+				"recherche": (datas[0] ? datas[0] : null),
+				"url": (datas[1] ? datas[1] : null),
+				"nbreponse": (datas[2] ? datas[2] : null),
+				"select": (datas[3] ? datas[3] : null)
+			}
+		)
+		// this.debug ? console.log("oldSearch") : ''
+		// this.debug ? console.log(this.oldSearch) : ''
+	}
+	set_InitialSearch() {
+		this.set_This('set_InitialSearch', 'reponseHtml', '')
+		this.set_This('set_InitialSearch', 'reponseReq', null)
+		this.set_This('set_InitialSearch', 'nbSubmit', 0)
+		this.set_This('set_InitialSearch', 'maRecherche', '')
+		// this.set_This('set_InitialSearch','maSelection',null)
+	}
+
 	// GETTERS 
-	get_ReqRecordings() {
+	get_This(Func, Nom) {
+		// console.log('(' + Func + ') Get_(' + Nom + '="' + this[Nom] + '")')
+		return this[Nom]
+	}
+	get_Recordings() {
 		this.initialise
 		this.set_NbSubmitPlus1() // incrementation
 		this.set_CleanNewSearch() // update and/or reset old datas
 		this.set_FullUrl() // set new url with clean data
-		this.set_This('get_ReqRecordings', 'vinyl_searching', true)
+		this.set_This('get_Recordings', 'vinyl_searching', true)
 		if (this.vinylButon) {
 			this.myOldVinyl(true)
 		}
@@ -329,12 +373,12 @@ class Muzica {
 		MonPost.open(this.urlDatas.methode, this.urlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
 		MonPost.onreadystatechange = (e) => {
-			// console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
+			// this.debug ? ('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status): ''
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
 				let resultat = JSON.parse(MonPost.responseText)
-				this.set_This('get_ReqRecordings', 'reponseReq', resultat)
+				this.set_This('get_Recordings', 'reponseReq', resultat)
 				// set nb response for pagination
-				this.set_This('get_ReqRecordings', 'nbReponses', this.reponseReq.count)
+				this.set_This('get_Recordings', 'nbReponses', this.reponseReq.count)
 				// old searchs
 				this.set_OldSearch([this.maRecherche, this.urlDemandee, this.nbReponses, this.maSelection])
 				//
@@ -342,21 +386,24 @@ class Muzica {
 				if (this.vinylButon && this.vinyl_searching) {
 					this.myOldVinyl(false)
 				}
-				this.set_This('get_ReqRecordings', 'vinyl_searching', false)
+				this.set_This('get_Recordings', 'vinyl_searching', false)
 				this.refresh_ResponsTable()
+
+				// ICI GESTION NOT FOUND
 			}
 		}
+		this.debug ? console.clear() : ''
 		this.debug ? console.log('get all Records at : ' + this.urlDemandee) : ''
 		MonPost.send()
 	}
-
-	get_ReqReleaseByRecordingsId(oneRecord){
+	get_ReleaseByRecordingsId(oneRecord){
 		let MonPost = new XMLHttpRequest()
 		let urlDemandee = 'https://musicbrainz.org/ws/2/recording/' + oneRecord.id + this.urlDatas['fmt'] + this.urlDatas['rel']
-		// 660404c9-a3e5-43c5-bd76-4339b00190e6?inc=genres+ratings+artists+releases
 
 		MonPost.open(this.urlDatas.methode, urlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+
+		this.make_modal_alive(true)
 
 		MonPost.onreadystatechange = (e) => {
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
@@ -366,34 +413,65 @@ class Muzica {
 				
 				this.make_Modal(resultats)
 			}
+			
+			// // ICI GESTION NOT FOUND
+			// if (MonPost.readyState == 4 && MonPost.status == 400) {
+			// 	let resultats = document.querySelector('#resultats').textContent
+			// 	this.debug ? console.log('404 not found with : ' + urlDemandee) : ''
+			// }
+
 		}
-		this.debug ? console.log('get all Releases from a Record_id at : ' + urlDemandee) : ''
+		this.debug ? console.log('get all Releases by Record ID : ' + urlDemandee) : ''
 		MonPost.send()
 	}
-	get_ReqArtsByReleaseId(mbid) {
+	get_ArtsByReleaseId(mbid,title) {
 		let MonPost = new XMLHttpRequest()
 		let urlDemandee = this.urlDatas['arts'] + mbid + this.urlDatas['fmt']
+		let divresultats = document.querySelector('#release-'+mbid)
+		let reltitle = document.querySelector('#rel-title-' + mbid)
 
 		MonPost.open(this.urlDatas.methode, urlDemandee, true)
 		MonPost.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+		
+		reltitle.textContent = " LOADING ."
 
 		MonPost.onreadystatechange = (e) => {
+			// if (MonPost.readyState == 4 && MonPost.status != 200) {
+				this.debug ? console.log('coucou') : ''
+			// }
+
 			if (MonPost.readyState == 4 && MonPost.status == 200) {
 				let resultats = JSON.parse(MonPost.responseText)
 				this.debug ? console.log('all images from Release_Id : '+ mbid) : ''
+				reltitle.textContent = title
 				this.debug ? console.log(resultats) : ''
 				this.set_images(resultats, mbid)
 				return resultats
 			}
-			else{
-				// console.log('MonPost.readyState: ' + MonPost.readyState + ' / MonPost.status:' + MonPost.status)
+			// 404 NOT FOUND
+			if (MonPost.readyState == 4 && MonPost.status == 404) {
+				divresultats ? divresultats.textContent = "Sorry, no cover art found for release : " + mbid + ' !' : ''
+				this.debug ? console.log('No cover art found at url : ' + urlDemandee) : ''
 			}
+
+			// ICI ICI ICI
+
 		}
 		// MonPost.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
 		this.debug ? console.log('get all arts from a Release_id at : ' + urlDemandee) : ''
 		MonPost.send()
 	}
 
+	// reinit
+	set_InitialSearch() {
+		this.set_This('set_InitialSearch', 'reponseHtml', '')
+		this.set_This('set_InitialSearch', 'reponseReq', null)
+		this.set_This('set_InitialSearch', 'nbSubmit', 0)
+		this.set_This('set_InitialSearch', 'maRecherche', '')
+		// this.set_This('set_InitialSearch','maSelection',null)
+	}
+
+	// Makers
 	make_SelectMenu() {
 		let catIndex = this.myCats
 		let menuSelect = document.querySelector('#maselection')
@@ -406,22 +484,7 @@ class Muzica {
 			menuSelect.add(MenuOption)
 		}
 		menuSelect.selectedIndex = 0
-	}
-	
-	// Checkers
-	// is_Actif() {
-	// 	return this.nbSubmit <= this.nbSubmitDie ? true : false
-	// }
-	
-	reinit_search() {
-		this.set_This('reinit_search', 'reponseHtml', '')
-		this.set_This('reinit_search', 'reponseReq', null)
-		this.set_This('reinit_search', 'nbSubmit', 0)
-		this.set_This('reinit_search', 'maRecherche', '')
-		// this.set_This('reinit_search','maSelection',null)
-	}
-
-	// Makers
+	}	
 	make_HtmlTable() {
 		if (this.reponseReq) {
 			// table body
@@ -452,7 +515,7 @@ class Muzica {
 				// liste release album col
 				let nbreleased = 0
 				let nblines = 0
-				if (oneRecord['releases']) {
+				// if (oneRecord['releases']) {
 					let lesreleasesA = ''
 					let lesreleasesB = ''
 					for (var released in oneRecord['releases']) {
@@ -471,13 +534,11 @@ class Muzica {
 					lesreleasesB = nblines + ' release' + (nblines>1 ? 's' : '') + ' found \n' + lesreleasesB
 					itemtitle.setAttribute('title', lesreleasesB)
 					item.setAttribute('title', lesreleasesA)
-				} else {
-					// no release
-				}
+				// } else {
+				// 	// no release
+				// }
 				item.textContent = oneRecord['title']
-				item.textContent = (oneRecord['releases'] && oneRecord['releases'][0]) 
-					? oneRecord['releases'][0].title
-					: this.nodata
+				item.textContent = (oneRecord['releases'] && oneRecord['releases'][0]) ? oneRecord['releases'][0].title : this.nodata
 				trbody.appendChild(itemtitle)
 				trbody.appendChild(item)
 				// actions col
@@ -490,7 +551,7 @@ class Muzica {
 					if (oneRecord['releases']) {
 						let record = oneRecord
 						itembutton.addEventListener('click', (e) => {
-							this.get_ReqReleaseByRecordingsId(record)
+							this.get_ReleaseByRecordingsId(record)
 						},
 							{once: false})
 					}
@@ -511,114 +572,104 @@ class Muzica {
 			return 'vide'
 		}
 	}
-
-
-	make_Modal(lesreleases) {
-		this.debug ? console.log('lesreleases') : ''
-		this.debug ? console.log(lesreleases) : ''
-		if (!document.querySelector('#fond-modal')) {
+	make_modal_alive(statut){
+		// if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
 			modalalbum.id = "rel_modal"
-			modalalbum.className = "rel-modal-fs"
+			modalalbum.className = "rel-modal-fs" + (statut ? '-loading' : '')
 				let modaldialog = document.createElement("div")
 				modaldialog.id = "rel-modal-cadre"
 				modaldialog.className = "rel-modal-cadre"
-				// modaldialog.setAttribute('role', 'document')
 					let modalcontent = document.createElement("div")
 					modalcontent.id = 'rel-contenu-modal'
 					modalcontent.className = "rel-modal-contenu"
+
+		if (statut){
+			let recordloading = document.createElement("img")
+			recordloading.className = "recordloading"
+			recordloading.src = 'assets/theme/loadingvinyl.svg'
+			modalcontent.appendChild(recordloading)
+		}
 			modaldialog.appendChild(modalcontent)
 			modalalbum.appendChild(modaldialog)
 			document.body.appendChild(modalalbum)
 
-			this.modal_AddContent(true, 'div', 'rel-contenu-modal', null, 'rel-modal-contenu-contenu', 'rel-modal-contenu-contenu')
-				this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', "Informations", 'rel-modal-contenu-contenu-info', 'rel-modal-contenu-contenu-info')
+		// }
+	}
+	make_Modal(lesreleases) {
+		this.debug ? console.log('lesreleases') : ''
+		this.debug ? console.log(lesreleases) : ''
 
-					// let rec_score = lesreleases['score'] ? lesreleases['score'] : false
-					// rec_score ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Score: " + rec_score + '%', 'modalscore', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					// let rec_isrcs = lesreleases['isrcs'] ? lesreleases['isrcs'] : false
-					// this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "isrcs: " + (rec_isrcs ? rec_isrcs : 'vide'), 'modalisrcs', 'rel-modal-contenu-contenu-info-item')
-
-					lesreleases['title']
-					
-					let rec_title = lesreleases['title'] ? lesreleases['title'] : false
-					rec_title ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Title: " + rec_title + '.', 'modaltitle', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					
-					let rec_artistcredit = lesreleases['artist-credit'] ? lesreleases['artist-credit'] : false
-					rec_artistcredit ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Artists: " + this.getall_tag(rec_artistcredit, 'name') + '.', 'modalartists', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					
-					// let rec_id = lesreleases['id'] ? lesreleases['id'] : false
-					// this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "id: " + (rec_id ? rec_id : 'vide'), 'modalid', 'rel-modal-contenu-contenu-info-item')
-
-					let rec_genres = lesreleases['genres'] ? lesreleases['genres'] : false
-					rec_genres ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Genres: " + this.getall_tag(rec_genres, 'name') + '.', 'modalgenres', 'rel-modal-contenu-contenu-info-item') : 'vide'
-					
-					
-					let rec_length = lesreleases['length'] ? lesreleases['length'] : false
-					rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + this.make_Pylformat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
-					
-					let rec_rating = lesreleases['rating'] ? lesreleases['rating'].value : 0
-					let rec_votescount = lesreleases['votes-count'] ? lesreleases['votes-count'].value : 0
-					rec_rating ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Rating value: " + rec_rating, 'modalrating', 'rel-modal-contenu-contenu-info-item') : ''
-					this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Note : " + this.set_Stars(rec_votescount), 'modalnote', 'rel-modal-contenu-contenu-info-item')
-
-					// let rec_video = lesreleases['video'] ? lesreleases['video'] : false
-					// rec_video ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Video: " + rec_video, 'modalvideo', 'rel-modal-contenu-contenu-info-item') : ''
-
-				// RELEASES
-				this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', '', 'lesreleases', 'lesreleases')
-				let relCount = 0
-				for (let released in lesreleases['releases'])
-				{
-					let lereleased = lesreleases['releases'][released]	
-					// let rel_count = lereleased['count'] ? lereleased['count'] : false
-					//this.modal_AddContent(true, 'div', rel_divid, "Count: " + (rel_count ? rel_count : 'vide'), 'modal-rel-count-' + relCount, 'modalinfo-item')
-					let rel_divid = 'release-' + lereleased['id']
-					let rel_title = lereleased['title'] ? lereleased['title'] : false
-					let titlerelease = document.createElement("h6")
-					titlerelease.className = "modal-rel-title"
-					titlerelease.textContent =  " Album : " + ((rel_title) ? rel_title : 'vide')
-					this.modal_AddContent(true, 'div', 'lesreleases', titlerelease , rel_divid, 'unerelease')
-					// let rel_id = lereleased['id'] ? lereleased['id'] : false
-					// this.modal_AddContent(true, 'div', rel_divid, "Id: " + (rel_id ? rel_id : 'vide'), 'modal-rel-id-' + relCount, 'modalinfo-item')
-					// let rec_genres = lereleased['genres'] ? lereleased['genres'] : 'vide'
-					// rec_genres ? this.modal_AddContent(true, 'div', rel_divid, "Genres: " + this.getall_tag(rec_genres, 'name') + '.', 'modalgenres', 'modalinfo-item') : 'vide'
-					// let rel_artistcredit = lereleased['artist-credit'] ? lereleased['artist-credit'] : false	
-					// this.modal_AddContent(true, 'div', rel_divid, "Release Artists: " + (rel_artistcredit ? this.getall_tag(rel_artistcredit, 'name') + '.' : 'vide'), 'modal-rel-artist-' + relCount, 'modalinfo-item')
-						let rel_country = lereleased['country'] ? lereleased['country'] : false
-						let rel_date = lereleased['date'] ? lereleased['date'] : false
-						let rel_disambiguation = lereleased['disambiguation'] ? lereleased['disambiguation'] : false
-						let rel_trackcount = lereleased['track-count'] ? lereleased['track-count'] : false
-						rel_country ? 				this.modal_AddContent(true, 'div', rel_divid, "country: " + rel_country, 'modal-rel-country-' + relCount, 'modalinfo-item') : ''
-						rel_date ?						this.modal_AddContent(true, 'div', rel_divid, "date: " + rel_date, 'modal-rel-date-' + relCount, 'modalinfo-item') : 'vide'
-						rel_disambiguation ? 	this.modal_AddContent(true, 'div', rel_divid, "disambiguation: " + rel_disambiguation, 'modal-rel-disambiguation-' + relCount, 'modalinfo-item') : 'vide'
-						rel_trackcount ? 			this.modal_AddContent(true, 'div', rel_divid, "track-count: " + rel_trackcount, 'modal-rel-trackcount-' + relCount, 'modalinfo-item') : 'vide'
-					// ARTS
-					let art_divid = 'arts-' + lereleased['id']
-					this.modal_AddContent(true, 'div', rel_divid, '', art_divid, 'arts')
-					
-					this.get_ReqArtsByReleaseId(lereleased['id'])
-
-					relCount++
-				}
-			this.modal_AddHeader('div', 'rel-contenu-modal', (lesreleases['artist-credit'] && lesreleases['artist-credit'][0]) ? lesreleases['artist-credit'][0].name + ' - ' + lesreleases['title'] : 'vide')
-			this.modal_AddFooter('div', 'rel-contenu-modal')
+		if (document.querySelector('#rel_modal')) {
+			this.del_TagById('rel_modal')
 		}
+		this.make_modal_alive(null)
+		this.modal_AddContent(true, 'div', 'rel-contenu-modal', null, 'rel-modal-contenu-contenu', 'rel-modal-contenu-contenu')
+			this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', "Informations", 'rel-modal-contenu-contenu-info', 'rel-modal-contenu-contenu-info')
+
+				let rec_title = lesreleases['title'] ? lesreleases['title'] : false
+				rec_title ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Title: " + rec_title + '.', 'modaltitle', 'rel-modal-contenu-contenu-info-item') : 'vide'
+				
+				let rec_artistcredit = lesreleases['artist-credit'] ? lesreleases['artist-credit'] : false
+				rec_artistcredit ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Artists: " + this.getall_tag(rec_artistcredit, 'name') + '.', 'modalartists', 'rel-modal-contenu-contenu-info-item') : 'vide'
+
+				let rec_genres = lesreleases['genres'] ? lesreleases['genres'] : false
+				rec_genres ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Genres: " + this.getall_tag(rec_genres, 'name') + '.', 'modalgenres', 'rel-modal-contenu-contenu-info-item') : 'vide'
+				
+				
+				let rec_length = lesreleases['length'] ? lesreleases['length'] : false
+				rec_length ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Length: " + this.make_Pyl_TimeFormat(rec_length), 'modallength', 'rel-modal-contenu-contenu-info-item') : ''
+				
+				let rec_rating = lesreleases['rating'] ? lesreleases['rating'].value : 0
+				let rec_votescount = lesreleases['votes-count'] ? lesreleases['votes-count'].value : 0
+				rec_rating ? this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu-info', "Rating value: " + this.set_Stars(rec_rating), 'modalrating', 'rel-modal-contenu-contenu-info-item') : ''
+
+			// RELEASES
+			this.modal_AddContent(true, 'div', 'rel-modal-contenu-contenu', '', 'lesreleases', 'lesreleases')
+			let relCount = 0
+			for (let released in lesreleases['releases'])
+			{
+				let lereleased = lesreleases['releases'][released]	
+
+				let rel_divid = 'release-' + lereleased['id']
+				let rel_title = lereleased['title'] ? lereleased['title'] : false
+				let titlerelease = document.createElement("h6")
+				titlerelease.className = "modal-rel-title"
+				titlerelease.id = "rel-title-" + lereleased['id']
+				titlerelease.textContent = " Album : " + ((rel_title) ? rel_title : 'vide')
+				this.modal_AddContent(true, 'div', 'lesreleases', titlerelease , rel_divid, 'unerelease')
+				
+					let rel_country = lereleased['country'] ? lereleased['country'] : false
+					let rel_date = lereleased['date'] ? lereleased['date'] : false
+					let rel_disambiguation = lereleased['disambiguation'] ? lereleased['disambiguation'] : false
+					let rel_trackcount = lereleased['track-count'] ? lereleased['track-count'] : false
+					rel_country ? 				this.modal_AddContent(true, 'div', rel_divid, "country: " + rel_country, 'modal-rel-country-' + relCount, 'modalinfo-item') : ''
+					rel_date ?						this.modal_AddContent(true, 'div', rel_divid, "date: " + rel_date, 'modal-rel-date-' + relCount, 'modalinfo-item') : 'vide'
+					rel_disambiguation ? 	this.modal_AddContent(true, 'div', rel_divid, "disambiguation: " + rel_disambiguation, 'modal-rel-disambiguation-' + relCount, 'modalinfo-item') : 'vide'
+					rel_trackcount ? 			this.modal_AddContent(true, 'div', rel_divid, "track-count: " + rel_trackcount, 'modal-rel-trackcount-' + relCount, 'modalinfo-item') : 'vide'
+				
+				// ARTS
+				let art_divid = 'arts-' + lereleased['id']
+				this.modal_AddContent(true, 'div', rel_divid, '', art_divid, 'arts')
+				this.get_ArtsByReleaseId(lereleased['id'],rel_title)
+				relCount++
+			}
+		this.modal_AddHeader('div', 'rel-contenu-modal', (lesreleases['artist-credit'] && lesreleases['artist-credit'][0]) ? lesreleases['artist-credit'][0].name + ' - ' + lesreleases['title'] : 'vide')
+		this.modal_AddFooter('div', 'rel-contenu-modal')
 	}
 
 	// modal stuff
 	modal_AddHeader(tag, destId, leString) {
 		let cible = document.querySelector('#' + destId)
 		let modalheader = document.createElement(tag)
-		modalheader.className = "modal-headerx"
 		modalheader.className = "rel-modal-contenu-header"
 		let modaltitle = document.createElement("h6")
-		modaltitle.id = "modalLabelx"
+		modaltitle.id = "ZLabel"
 		modaltitle.className = "rel-modal-contenu-header-label"
 		modaltitle.textContent = leString
 
 		let modalbutton = document.createElement("button")
-		modalbutton.id = "modalClosex"
+		modalbutton.id = "ZClose"
 		modalbutton.className = "btn-rel btn-rel-close"
 		modalbutton.addEventListener('click', (e) => {
 				let aEffacer = document.querySelector('#rel_modal')
@@ -665,23 +716,17 @@ class Muzica {
 			Cible.appendChild(modalfooter)
 		}
 	}
-
-	set_imagesTempo(mbid) {
-		this.modal_AddContent(true, 'div', 'arts-' + mbid, this.modal_AddImage('toto', 'modal-vignette-tempo', mbid), 'tempo-' + mbid, 'modalinfo-item')
-		ajout.src = 'assets/theme/spinner.jpg'
-	}
-	ModalAddImage(lurl, laClass, mbid, imgid) {
+	modal_AddImage(lurl, laClass, mbid, imgid) {
 		let ajout = document.createElement('img')
 		ajout.id = 'vig-' + imgid
 		ajout.className = laClass + ' loading'
-		// ajout.style.width = '50px'
-		ajout.src = 'assets/theme/loading3.svg'
+		ajout.src = 'assets/theme/loadingvinyl.svg'
 		var img = new Image();
-		img.onload = function() {
+		img.onload = (e)=> {
 			// document.querySelector('#vig-' + imgid).style.width.unset()
-			document.querySelector('#vig-' + imgid).src = lurl
-			document.querySelector('#vig-' + imgid).classList.remove('loading')
-			// ajout.src = lurl
+			let newimage = document.querySelector('#vig-' + imgid)
+			newimage ? document.querySelector('#vig-' + imgid).src = lurl : ''
+			newimage ? document.querySelector('#vig-' + imgid).classList.remove('loading') : ''
 		}
 		img.src = lurl
 		return ajout
@@ -705,9 +750,12 @@ class Muzica {
 			pos ? Cible.appendChild(ajout) : Cible.prepend(ajout)
 		}
 	}
+	modal_TempoVignette(mbid) {
+		this.modal_AddContent(true, 'div', 'arts-' + mbid, this.modal_AddImage('toto', 'modal-vignette-tempo', mbid), 'tempo-' + mbid, 'modalinfo-item')
+	}
 
 	// html refreshs
-	get_HtmlPage() {
+	fresh_HtmlPage() {
 		let containertableau = document.querySelector('#containertableau')
 
 		// Some stuff here in the future
@@ -722,31 +770,29 @@ class Muzica {
 
 		let card = document.createElement("div")
 		card.id = "cardtable"
-		card.className = "cardx shadow mb-4"
+		card.className = "lapage shadow"
 
 		let cardheader = document.createElement("div")
-		cardheader.className = "card-header py-3"
+		cardheader.className = "page-entete"
 
 		let cardresponse = document.createElement("div")
 		cardresponse.id = "lareponse"
-		cardresponse.className = "m-0 font-weight-bold text-primary"
-		// cardresponse.textContent = "nb Results"
+		cardresponse.className = "font-weight-bold text-primary"
 
 		let cardbody = document.createElement("div")
-		cardbody.className = "card-bodyx"
+		cardbody.className = "page-corps"
 
 		let tableresponsive = document.createElement("div")
 		tableresponsive.className = "table-responsive"
 
 		let table = document.createElement("table")
 		table.id = "datatable"
-		// table.id = "musika-reponse"
 		table.className = "table table-bordered table-striped table-hover table-sm"
 		// table.style.width = "100%"
 		// table.style.cellspacing = "0"
 
 		let tablecaption = document.createElement("caption")
-		containertableau.textContent = 'Recording List / Liste des albums';
+		containertableau.textContent = '';
 		table.appendChild(tablecaption)
 		
 		tableresponsive.appendChild(table)
@@ -758,41 +804,79 @@ class Muzica {
 
 		containertableau.appendChild(card)
 
+		this.refresh_PageHeaderContent()
 		this.make_SelectMenu()
 	}
+	refresh_PageHeaderContent(string=null){
+		this.del_TagById('pageheadercontent')
+		let bloccontents = document.createElement("div")
+		bloccontents.id = 'pageheadercontent'
+		bloccontents.textContent = 'Make your own search on : '
+
+		let content = document.createElement("a")
+		content.setAttribute('href', 'https://musicbrainz.org/')
+		content.setAttribute('title', 'Make your own search on MusicbrainZ')
+		content.setAttribute('target', '_musicbrainz')
+		content.textContent = 'MusicBrainz - The Open Music Encyclopedia'
+		
+		// let txt = document.createTextNode("");
+		// bloccontents.appendChild(txt)
+
+		bloccontents.appendChild(content)
+		let br = document.createElement("br")
+		bloccontents.appendChild(br)
+		
+		if (string) {
+			let txt = document.createTextNode(string);
+			bloccontents.appendChild(txt)
+		}
+
+		document.querySelector("#lareponse").appendChild(bloccontents)
+	}
 	refresh_ResponsTable() {
-		document.querySelector("#lareponse").textContent = this.nbReponses + " Résultat" + ((this.nbReponses > 1) ? 's.' : '.')
-
-		// clean the existing datatable div
-		document.querySelector("#datatable").textContent = ''
-
-		// table header
-		let thead = document.createElement("thead")
-		thead.id = "musika-header"
-		let trhead = document.createElement("tr")
-		for (var i = 0; i < this.myCats[this.maSelection].intitules.length; i++) {
-			let item = document.createElement("th")
-			item.textContent = this.myCats[this.maSelection].intitules[i];
-			trhead.appendChild(item)
+		if ( this.nbReponses == 0){
+			// no results
+			document.querySelector("#lareponse").textContent =""
+			// document.querySelector("#datatable").textContent = ""
+			document.querySelector("#datatable").textContent = "Nothing found, sorry !"
+			this.refresh_PageHeaderContent()
+			// clearing pagination
+			this.del_TagById('pagination')
 		}
-		thead.appendChild(trhead)
-		document.querySelector("#datatable").appendChild(thead)
+		else
+		{
+			this.refresh_PageHeaderContent()
+			document.querySelector("#lareponse").textContent = this.nbReponses + " Result" + ((this.nbReponses > 1) ? 's.' : '.')
+			// clean the existing datatable div
+			document.querySelector("#datatable").textContent = ''
+			// table header
+			let thead = document.createElement("thead")
+			thead.id = "musika-header"
+			let trhead = document.createElement("tr")
+			for (var i = 0; i < this.myCats[this.maSelection].intitules.length; i++) {
+				let item = document.createElement("th")
+				item.textContent = this.myCats[this.maSelection].intitules[i];
+				trhead.appendChild(item)
+			}
+			thead.appendChild(trhead)
+			document.querySelector("#datatable").appendChild(thead)
 
-		// table body
-		document.querySelector("#datatable").appendChild(this.make_HtmlTable())
+			// table body
+			document.querySelector("#datatable").appendChild(this.make_HtmlTable())
 
-		// table footer
-		let tfoot = document.createElement("tfoot")
-		tfoot.id = "musika-footer"
-		let trfoot = document.createElement("tr")
-		for (var i = 0; i < this.myCats[this.maSelection].intitules.length; i++) {
-			let item = document.createElement("th")
-			item.textContent = this.myCats[this.maSelection].intitules[i];
-			trfoot.appendChild(item)
+			// table footer
+			let tfoot = document.createElement("tfoot")
+			tfoot.id = "musika-footer"
+			let trfoot = document.createElement("tr")
+			for (var i = 0; i < this.myCats[this.maSelection].intitules.length; i++) {
+				let item = document.createElement("th")
+				item.textContent = this.myCats[this.maSelection].intitules[i];
+				trfoot.appendChild(item)
+			}
+			tfoot.appendChild(trfoot)
+			document.querySelector("#datatable").appendChild(tfoot)
+			this.set_Pagination()
 		}
-		tfoot.appendChild(trfoot)
-		document.querySelector("#datatable").appendChild(tfoot)
-		this.set_Pagination()
 	}
 
 	// SPINNER VINYL
@@ -838,6 +922,7 @@ class Muzica {
 		}
 	}
 
+	// STUFF
 	getall_artistcredit(index, le_name) {
 		if (index.length > 0) {
 			let retour = []
@@ -858,11 +943,6 @@ class Muzica {
 		}
 		return 'vide'
 	}
-	make_awesomeico(string){
-		let awesomeico = document.createElement("i")
-		awesomeico.className = string
-		return awesomeico
-	}
 	get_Date() {
 		// let rightnow = Date.now()
 		let today = new Date()
@@ -873,16 +953,12 @@ class Muzica {
 			today.getMinutes() + ':' +
 			today.getSeconds() + ':';
 	}
-	set_This(Func, Nom, Value) {
-		// var oldValue = this[Nom]
-		//console.log('(' + Func + ') set_(' + Nom + ': "' + oldValue + '" to "' + Value + '")')
-		this[Nom] = Value
+	make_awesomeico(string){
+		let awesomeico = document.createElement("i")
+		awesomeico.className = string
+		return awesomeico
 	}
-	get_This(Func, Nom) {
-		// console.log('(' + Func + ') Get_(' + Nom + '="' + this[Nom] + '")')
-		return this[Nom]
-	}
-	make_Pylformat(number) {
+	make_Pyl_TimeFormat(number) {
 		//thx Pyl	
 		let minutes = 0
     let seconds = 0
@@ -902,14 +978,10 @@ class Muzica {
 		link.textContent = text
 		return link
 	}
-
-	// todo 
 	set_Stars(score) {
-		let empty = "☆"
-		let full = "★"
 		let stars = ''
 		for(let i= 0;i < 5; i++){
-			stars += score>i ? full : empty
+			stars += score>i ? "★" : "☆"
 		}
 		return stars
 	}
@@ -917,4 +989,4 @@ class Muzica {
 
 let Zik = new Muzica('musika')
 Zik.listener()
-Zik.get_HtmlPage()
+Zik.fresh_HtmlPage()

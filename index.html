@@ -1,66 +1,50 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<title>Musicbrainz clone</title>
+		<title>Musicbrainz JS ECF</title>
 		<meta name="description" content="ecf javascript">
 		<meta name="keywords" content="html, css, javascript, bootstrap, ecf">
 		<link favicon="icon" href="assets/theme/paticon.png" type="image/png">
-		<!-- Custom fonts for this template -->
 		<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-		<link
-			href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-			rel="stylesheet">
-		<!-- Custom styles for this template -->
-		<!-- <link href="assets/css/sb-admin-3.css" rel="stylesheet"> -->
+		<!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet"> -->
 		<link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-		<!-- Final styles for this template -->
-		<link href="assets/theme/style.css" rel="stylesheet">
-		<link href="assets/theme/vinyl.css" rel="stylesheet">
-		<link href="assets/theme/footer.css" rel="stylesheet">
-		<link href="assets/theme/search.css" rel="stylesheet">
-		<link href="assets/theme/search_movable.css" rel="stylesheet">
-		<link href="assets/theme/pagination.css" rel="stylesheet">
-		<link href="assets/theme/modalv2.css" rel="stylesheet">
+		<link href="assets/css/style.css" rel="stylesheet">
+		<link href="assets/css/vinyl.css" rel="stylesheet">
+		<link href="assets/css/footer.css" rel="stylesheet">
+		<link href="assets/css/search.css" rel="stylesheet">
+		<link href="assets/css/search_movable.css" rel="stylesheet">
+		<link href="assets/css/pagination.css" rel="stylesheet">
+		<link href="assets/css/modal.css" rel="stylesheet">
+		<link href="assets/css/options.css" rel="stylesheet">
 	</head>
-
 	<body id="page-top">
-		<!-- Page Wrapper -->
 		<div id="wrapper">
-			<!-- Content Wrapper -->
-			<div id="" class="colonneprincipal">
-				<!-- Main Content -->
+			<div id="contents" class="colonneprincipal">
 				<div id="">
-					<!-- Topbar -->
 					<nav id="pageheader" class="">
 						<div class="surtop">
 							<a class="brand-logo" href="#">
 								<i class="fas fa-compact-disc"></i>
-								VINYLONOFF
+								PatoBrainz
 							</a>
-
 						</div>
 						<ul class="navbar-nav mr-auto">
 						</ul>
 						<a id='vinyl-bouton' class="navbar-text vinyl-bouton" href="#">
-							<!-- <i class="fas fa-volume-up"></i> -->
 							<span id='vinyl-bouton-content' title="Switch Spinner Off">SPIN <i class="fas fa-compact-disc"></i></span>
 						</a>
 					</nav>
-					<!-- Form Search -->
 					<div class="searchbloc">
 						<form id="rechercher" class="rechercher shadow">
 							<div class="col1">
-								<!-- <div class=" mr-auto"> -->
 								<input id="marecherche" type="text" class="marecherche" placeholder="votre recherche..."
 									aria-label="Search" aria-describedby="muzikasearch">
 								<button id="submit1" class="clone clonA no" type="submit">
 									<i class="fas fa-search fa-sm"></i>
 								</button>
-								<!-- </div> -->
 							</div>
 							<div class="col2">
 								<select id="maselection" class="maselection">
@@ -71,55 +55,13 @@
 							</div>
 						</form>
 					</div>
-					<!-- Begin Page Content -->
 					<div id="containertableau" class="container-fluid"> </div>
-					<!-- End of Page Content -->
 				</div>
-				<!-- End of Main Content -->
 			</div>
-			<!-- End of Content Wrapper -->
-
-
-			<footer id="pagefooter" class="">
-				<span class="">
-					<button id="options_link" type="button" class="footerlink boutton" href="#">
-						<i class="fas fa-sliders-h"></i>
-						Options
-					</button>
-					<button id="info_link" type="button" class="footerlink boutton" href="#">
-						<i class="fas fa-volume-up"></i>
-						Info
-					</button>
-					<button id="muzicbrainz_link" type="button" class="footerlink boutton" href="https://musicbrainz.org/"
-						target="_muzicbrainz">
-						<i class="fas fa-database"></i>
-						MusicBrainz
-					</button>
-					<button id="github_link" type="button" class="footerlink boutton" href="https://github.com/patobeur/Muzica"
-						target="_github">
-						<i class="fas fa-file-code"></i>
-						Patobeur
-					</button>
-					<button id="fontawesome_link" type="button" class="footerlink boutton" href="https://getbootstrap.com"
-						target="_bootstrap">
-						<i class="fas fa-pencil-ruler"></i>
-						Bootstrap
-					</button>
-					<button id="awesome_link" type="button" class="footerlink boutton" href="https://fontawesome.com"
-						target="_fontawesome">
-						<i class="fab fa-font-awesome-flag"></i>
-						FontAwesome
-					</button>
-				</span>
-			</footer>
 		</div>
-		<!-- End of Wrapper -->
-
-		<!-- Scroll to Top Button-->
-		<a class="scroll-to-top rounded" href="#page-top">
-			<i class="fas fa-angle-up"></i>
-		</a>
-
+		<div id="scroll-to-top" class="eteint">
+				<i class="fas fa-caret-square-up"></i>
+		</div>
 		<!-- SPINNER VINYL -->
 		<div id="spinnercache" class="fixed-top"></div>
 		<div id="spinnervinyl" class="spinning">
@@ -141,10 +83,10 @@
 				</div>
 			</div>
 		</div>
-		<!-- END SPINNER VINYL -->
-
-		<script src="assets/js/muzicav10.js" type="text/javascript"></script>
-		<script src="assets/js/footerv2.js" type="text/javascript"></script>
+		<!-- END SPINNER VINYL -->		
+		<script src="assets/js/muzica.js" type="text/javascript"></script>
+		<!-- <script src="assets/js/options.js" type="text/javascript"></script> -->
+		<script src="assets/js/footer.js" type="text/javascript"></script>
+		<script src="assets/js/scrolltotop.js" type="text/javascript"></script>
 	</body>
-
 </html>

@@ -5,7 +5,25 @@
 	--rel_modal_border_radius: 1em;
 	--rel_modal_radius_regen: .5s;
 	--pagination_radius: 15%;
-	--pagination_bg_hover: rgb(29, 29, 29);
+  --pagination_bg_hover: rgb(29, 29, 29);
+
+  --lapage_sm_width: 100%;
+  --lapage_sm_margin: 0 0 1rem 0;
+  --lapage_sm_padding: 0 0 2rem 0;
+  --lapage_sm_bg :  white;
+
+  --lapage_lg_width: 100%;
+  --lapage_lg_margin: 1rem;
+  --lapage_lg_padding: 0 0 3rem 0;
+  --lapage_lg_bg :  white;
+
+  --lapage_xl_width: 100%;
+  --lapage_xl_margin: 1rem;
+  --lapage_xl_padding: 1rem;
+  --lapage_xl_bg : white;
+
+  --page-corps_lg_padding: 0.9rem 0.9rem 0 0.9rem;
+  --page-corps_sm_padding: 0rem;
 }
 
 html {
@@ -20,7 +38,6 @@ a:focus {
   padding-right: 1.5rem;
 }
 body {
-	/* min-width: 992px !important; */
 	margin: 0;
 	padding: 0;
 	font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -28,7 +45,6 @@ body {
 	font-weight: 400;
 	line-height: 1.5;
 	color: #858796;
-	text-align: left;
 	background-color: rgba(80, 80, 80, 0.925);
 	width:100vw;
 	height:100vh;
@@ -113,7 +129,7 @@ a:link {
 }
 
 /* tableau  */
-.cardx{
+.lapage{
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -122,12 +138,15 @@ a:link {
 	background-color: #fff;
 	background-clip: border-box;
 	border: 1px solid #e3e6f0;
-	border-radius: var(--search_border_radius);
-	transition: border var(--regen) ease-in;
+  border-radius: var(--search_border_radius);
+  overflow: hidden;
+  transition: border var(--regen) ease-in;
+  padding: var(--lapage_lg_padding);
+  margin: var(--lapage_lg_margin);
 }
-.card-bodyx {
+.page-corps {
 	flex: 1 1 auto;
-	padding: 0.9rem;
+  padding: var(--page-corps_lg_padding);
 }
 
 @media (max-width: 575px) {
@@ -135,12 +154,39 @@ a:link {
 		margin: 1px;
 		padding: 1px;
 		font-size: .8rem;
-		transition: font-size .2s ease-in, padding .2s ease-in, margin .2s ease-in;
+		transition: font-size .2s ease-in, padding .2s ease-in, margin .2s ease-in, padding .2s ease-in;
 	}
-	.card-bodyx {
-		padding: 0.6rem;
-	}
+	.page-corps {
+    padding: var(--page-corps_sm_padding);
+  }
+  .lapage{
+    padding: var(--lapage_sm_padding);
+    margin: var(--lapage_sm_margin);
+    background-color: var(--lapage_sm_bg);
+  }
 }
+@media (min-width: 576px) {
+	.page-corps {
+    padding: var(--page-corps_lg_padding);
+  }
+  .lapage{
+    padding: var(--lapage_lg_padding);
+    margin: var(--lapage_lg_margin);
+    background-color: var(--lapage_lg_bg);
+  }
+}
+@media (min-width: 1000px) {
+	.page-corps {
+    padding: var(--page-corps_xl_padding);
+  }
+  .lapage{
+    padding: var(--lapage_xl_padding);
+    margin: var(--lapage_xl_margin);
+    background-color: var(--lapage_xl_bg);
+  }
+}
+
+
 /* TABLE */
 table {
   border-collapse: collapse;
@@ -236,43 +282,36 @@ table {
   background-color: #5a5c69;
   border-color: #5a5c69;
 }
-/* .btn-dark:not(:disabled):not(.disabled):active, .btn-dark:not(:disabled):not(.disabled).active,
-.show > .btn-dark.dropdown-toggle {
-  color: #fff;
-  background-color: #42444e;
-  border-color: #3d3e47;
-}
-.btn-dark:not(:disabled):not(.disabled):active:focus, .btn-dark:not(:disabled):not(.disabled).active:focus,
-.show > .btn-dark.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(115, 116, 128, 0.5);
-} */
+
 /* RESULTS COUNT */
-.card-header {
+.page-entete {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
   background-color: #f8f9fc;
   border-bottom: 1px solid #e3e6f0;
 }
 /* Nav top link */
-.scroll-to-top {
+#scroll-to-top {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  display: none;
-  width: 2.75rem;
-  height: 2.75rem;
+  right: 15px;
+  bottom: 3rem;
+  width: 3rem;
+  height: 3rem;
   text-align: center;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.548);
   background: rgba(90, 92, 105, 0.5);
   line-height: 46px;
+  border-radius: .5rem;
+  font-size: 2rem;
 }
-.scroll-to-top:focus, .scroll-to-top:hover {
+#scroll-to-top.eteint{
+  display: none;
+}
+#scroll-to-top:focus, #scroll-to-top:hover {
   color: white;
+  background: #000000;
 }
-.scroll-to-top:hover {
-  background: #5a5c69;
-}
-.scroll-to-top i {
+#scroll-to-top i {
   font-weight: 800;
 }
 
