@@ -3,6 +3,7 @@ class Muzica {
 	constructor(muzica) {
 		this.Version = 10
 		this.debug = false // affiche en console si true
+		this.optionsdebug = false // affiche les changement d'options en console si true
 		this.debug ? console.groupCollapsed('api version ' + this.Version + ' vanilla js') : ''
 		this.debug ? console.log('source: https://github.com/patobeur/Muzica') : ''
 		// this.debug ? console.log('Full hugs from |º47083µЯ !!!') : ''
@@ -12,7 +13,7 @@ class Muzica {
 		this.modalFooter = false // youtube & close bottom buttons on modal layout
 		this.nbSubmitDie = 5 // nb max de submit si recherche vide avant de bloquer
 		this.vinylButon = true // n'apparait pas lors de la recherche si true 
-		this.vinyl_enabled = true
+		this.vinyl_enabled = true // l'option est elle active ? oui si true
 		this.vinyl_searching = false // true si recherche en cours
 		// this.nbSubmitMax = 3							// nb max de submit si recherche vide
 		this.nbSubmit = 0 // nb couranbt de recherche vide
@@ -87,8 +88,22 @@ class Muzica {
 				"intitules": ["#", "artist", "title", "album", "actions"],
 				"SearchTag": ["artist", "release", "recording"],
 				"iconeclass": "fas fa-album-collection"
+			},
+			'stuff': {
+				"name": "stuff",
+				"texteselect": "Stuff",
+				"type": "recording",
+				"SearchCategorie": "recordings",
+				"intitules": ["#", "artist", "title", "album", "actions"],
+				"SearchTag": ["artist", "release", "recording"],
+				"iconeclass": "fas fa-album-collection"
 			}
 		}
+		//footer modal option
+		this.optionsModal = 'options_modal'
+		this.optionsModalinter = 'options_link'
+		this.origineOptionsClasseName = 'footerlink boutton'
+		this.enabledOptionsClasseName = 'up'
 		this.debug ? console.groupEnd() : ''
 	}
 
@@ -101,10 +116,16 @@ class Muzica {
 		})
 		// Listening Keyboard
 		document.addEventListener('keydown', (e) => {
-				let modal = document.querySelector('#'+this.modalName);
+			let modal = document.querySelector('#'+this.modalName);
+			let modalOptions = document.querySelector('#'+this.optionsModal);
 				// escape close the modal
 				if (e.keyCode === 27 && modal) {
 					modal.parentNode.removeChild(modal)
+				}
+				if (e.keyCode === 27 && modalOptions) {
+					modalOptions.parentNode.removeChild(modalOptions)
+					// modalOptions.classList.remove(this.enabledOptionsClasseName)
+
 				}
 		})
 		// Listening submit
@@ -575,7 +596,11 @@ class Muzica {
 	make_modal_alive(statut){
 		// if (!document.querySelector('#fond-modal')) {
 			let modalalbum = document.createElement("div")
-			modalalbum.id = "rel_modal"
+			modalalbum.id = this.modalName
+			
+			modalalbum.onclick = (e)=>{
+				e.target.id === this.modalName ? this.del_TagById(this.modalName) : ''
+			}
 			modalalbum.className = "rel-modal-fs" + (statut ? '-loading' : '')
 				let modaldialog = document.createElement("div")
 				modaldialog.id = "rel-modal-cadre"
@@ -719,7 +744,7 @@ class Muzica {
 	modal_AddImage(lurl, laClass, mbid, imgid) {
 		let ajout = document.createElement('img')
 		ajout.id = 'vig-' + imgid
-		ajout.className = laClass + ' loading'
+		ajout.className = laClass + ' LOADING RELEASE...'
 		ajout.src = 'assets/theme/loadingvinyl.svg'
 		var img = new Image();
 		img.onload = (e)=> {
@@ -806,6 +831,7 @@ class Muzica {
 
 		this.refresh_PageHeaderContent()
 		this.make_SelectMenu()
+		this.make_footer()
 	}
 	refresh_PageHeaderContent(string=null){
 		this.del_TagById('pageheadercontent')
@@ -984,6 +1010,187 @@ class Muzica {
 			stars += score>i ? "★" : "☆"
 		}
 		return stars
+	}
+	// modal options
+	make_ModalOptions(targetedid){
+		let optionmodal = document.querySelector("#" + this.optionsModal)
+		if (!optionmodal)
+		{
+			// let limiter = [25,50,75,100]
+			let modalTitle = document.createElement("h3")
+			modalTitle.textContent = "Options"
+
+			let modalOptions = document.createElement("div")
+			modalOptions.id = this.optionsModal
+			modalOptions.className = this.optionsModal + "-fs"
+			modalOptions.onclick = (e)=>{
+				if (e.target.id === this.optionsModal){
+					this.del_TagById(this.optionsModal)
+					this.set_Pagination()
+					
+					if (targetedid){document.querySelector("#"+targetedid).classList.remove(this.enabledOptionsClasseName)}
+				}
+			}
+		
+			let modalcadre = document.createElement("div")
+			modalcadre.id = "options-modal-cadre"
+			modalcadre.className = "options-modal-cadre"
+			// modalcadre.setAttribute('role', 'document')
+				let modalcontent = document.createElement("div")
+				modalcontent.id = 'options-modal-contenu'
+				modalcontent.className = "options-modal-contenu"
+
+				// SLIDER RESULTS PER PAGE
+				let sliderdiv = document.createElement("div")
+				sliderdiv.className="option-row"
+				let sliderinfo = document.createElement("div")
+				sliderinfo.className="div-res-per-page-info"
+				sliderinfo.textContent = "Result" + (this.limitPerPage > 1 ? 's' : '') + " wanted per page: " + this.limitPerPage
+				let resperpage = document.createElement("input")
+				resperpage.id = "limitPerPage"
+				resperpage.className = "slide-res-per-page"
+				resperpage.setAttribute('type',"range")
+				resperpage.setAttribute('min',"1")
+				resperpage.setAttribute('max',"100")
+				resperpage.setAttribute('value',this.limitPerPage)
+				resperpage.setAttribute('type',"range")
+				resperpage.setAttribute('type',"range")
+				resperpage.oninput = (e) => {
+					this.set_This('modaloptions', 'limitPerPage', e.target.value)
+					sliderinfo.textContent = "Result" + (e.target.value < 2 ? '' : 's') + " wanted per page: " + e.target.value;
+				}
+				sliderdiv.appendChild(sliderinfo)
+				sliderdiv.appendChild(resperpage)
+				modalcontent.appendChild(sliderdiv)
+				// END SLIDER RESULTS PER PAGE
+
+					modalcontent.appendChild(this.make_Options('modalSpinnerText','Spinner','vinylButon'))
+					modalcontent.appendChild(this.make_Options('modalDebugText','Debug display','debug'))
+					modalcontent.appendChild(this.make_Options('modalOptionsDebugText','OptionsDebug display','optionsdebug'))
+
+
+
+				modalcadre.appendChild(modalTitle)
+				modalcadre.appendChild(modalcontent)
+				modalOptions.appendChild(modalcadre)
+			// for (let i = 0; i< limiter; i++){
+			// 	let limittechoice = document.createElement("div")
+			// 	limittechoice.id = "options-modal-cadre"
+			// 	limittechoice.className = "options-modal-cadre"
+			// }
+			document.body.appendChild(modalOptions)
+			this.optionsdebug ? console.log('ok modal options'): ''
+		}
+		else{
+			if(optionmodal){
+				optionmodal.parentNode.removeChild(optionmodal)
+				this.optionsdebug ? console.log(' '+targetedid) : ''
+				document.querySelector("#"+targetedid).classList.remove(this.enabledOptionsClasseName)
+				this.optionsdebug ? console.log(document.querySelector("#"+targetedid).classList) : ''
+			}
+		}
+	}
+	
+// make_Options('modalDebugText','Debug display','debug')
+make_Options(texteId,textContent,thisValueName){
+				// Debug OR NOT Debug
+				let modalOption = document.createElement("div")
+				modalOption.className = 'option-row'
+					let modalLabel = document.createElement("label")
+					modalLabel.className="switch"
+					let modalText = document.createElement("span")
+					modalText.id = texteId
+					modalText.className = 'spinner-text'
+					modalText.textContent = textContent + " is " + (this[thisValueName] ? 'On' : 'Off')
+					let modalInput = document.createElement("input")
+					modalInput.onclick = (e) => {
+						this.set_This('modalOptions',thisValueName, e.target.checked)
+						document.querySelector("#"+texteId).textContent = textContent + " is " + (this[thisValueName] ? 'On' : 'Off')
+						this.debug ? console.log(thisValueName + ': ' + this[thisValueName]) : ''
+					}
+					modalInput.setAttribute('type',"checkbox")
+					modalInput.checked = this[thisValueName]
+					let modalSlider = document.createElement("span")
+					modalSlider.className = 'slider round'
+
+					modalLabel.appendChild(modalInput)
+					modalLabel.appendChild(modalSlider)
+					modalOption.appendChild(modalText)
+					modalOption.appendChild(modalLabel)
+					return modalOption
+
+}
+
+
+
+
+
+	// menu footer
+	make_footer(){
+		//// Footer
+
+		let nbItemsInFooter = 3
+		let textesItems = ['options','github','muzicbrainz','infos','fontawesome','awesome']
+		let actionItems = ['modal','link','link','link','link','link']
+		let awesomItems = ['fas fa-sliders-h','fas fa-file-code','fas fa-database','fab fa-font-awesome-flag','fas fa-pencil-ruler']
+		let urlItems = ['#','https://github.com/patobeur/Muzica','https://musicbrainz.org/','https://getbootstrap.com','https://fontawesome.com/icons?m=free']
+		let titleItems = ['Somme Options to do...','Code source from Patobeur on Github','Musbicbrainz Music Database','Bootstrap','free fontawesome icons']
+		let cibleId = "wrapper"
+		let footer = document.querySelector('#'+cibleId)
+
+		//// End Footer
+		if (footer) {
+			let footeritems = document.createElement('div')
+			footeritems.id = 'pagefooter'
+			
+			for (let i = 0;i<nbItemsInFooter;i++){
+			
+				let bouttonitem = document.createElement("div")
+					bouttonitem.id = textesItems[i] + '_link'
+					bouttonitem.className = 'footerlink boutton'
+					bouttonitem.setAttribute('href', '#')
+					bouttonitem.setAttribute('type', 'button')
+					bouttonitem.setAttribute('title', titleItems[i])
+				let awesomeicone = document.createElement("i")
+					awesomeicone.className = awesomItems[i]
+			
+				bouttonitem.prepend(this.capital(textesItems[i]))
+				bouttonitem.prepend(awesomeicone)
+			
+					// let item = textesItems[i] + '_link'
+					bouttonitem.addEventListener(
+						'click',
+						(event)=>{
+							this.animefooter(event,actionItems[i],urlItems[i])
+						}
+					)
+			
+					footeritems.appendChild(bouttonitem)
+					footer.appendChild(footeritems)
+			}
+		}
+	}
+	capital(string){
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+	animefooter(e,action,url){
+		let allup = document.getElementsByClassName(this.origineOptionsClasseName +  ' ' + this.enabledOptionsClasseName)
+		this.optionsdebug ? console.log("clicked") : ''
+		for (let j = 0;j<allup.length;j++){
+			allup[j].classList.remove(this.enabledOptionsClasseName)
+		}
+		switch (action){
+			case 'link':
+				window.open(url)
+			break;
+			case 'modal':
+				event.target.classList.add(this.enabledOptionsClasseName)
+				this.make_ModalOptions(event.target.id)
+			break;
+			default:
+				event.target.classList.add(this.enabledOptionsClasseName)
+			break;
+		}
 	}
 }
 

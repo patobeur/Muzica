@@ -1,18 +1,23 @@
-#options_modal {
+.options_modal-fs {
 	position: absolute;
 	position: fixed;
 	width: 100%;
 	height: 100%;
 	top: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.897);
+	background-color: rgba(0, 0, 0, 0.404);
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	z-index:99999;
 }
 
 
 .options-modal-cadre{	
+	/* display: flex;
+	flex-direction: row;
+	justify-content: center; */
+	/* align-items: center; */
 	padding: 0;
 	border: 0;
 	pointer-events: auto;
@@ -20,16 +25,287 @@
 	width: 40%;
 	height: 40%;
 	/* max-height:100%; */
-	border-radius: var(--search_border_radius);
-	transition: border var(--regen) ease-in;
 	overflow: hidden;
+	border-radius: var(--search_border_radius);
+	transition: border var(--regen) ease-in, width var(--regen) ease-in, background-color var(--regen) ease-in;
+	/* background-color: rgba(78, 78, 78, 0.801); */
+}
+.options-modal-cadre h3 {
+	padding:.2rem 0 .2rem .8rem;
+	margin:0;
+	max-height: 100%;
+	color:black;
+	font-weight: 600;
+	background-color: rgb(0, 0, 0,.1);
+	border-bottom: 3px dotted rgba(0, 0, 0, 0.404);
+}
+@media (max-width: 700px) {
+	#options_modal {
+		width: 100%;
+		height: 100%;
+	}
+	.options-modal-cadre {	
+		width: 80%;
+		height: 60%;
+		overflow-x: hidden;
+	}
 }
 
-.options-modal-contenu{
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
+.options-modal-contenu {
+	width:100%;
 	height: 100%;
 	max-height: 100%;
-	background-color: rgba(78, 78, 78, 0.801);
+	color:black;
+	font-weight: 600;
+	overflow: auto;
 }
+.options-modal-contenu div {
+	width:100%;
+	padding: 0 5px;
+}
+.options-modal-contenu div:first-child  {
+}
+.options-modal-contenu div:not(:first-child)  {
+	border-top: 4px dotted rgb(0, 0, 0,.1);
+	padding: 0 5px;
+}
+.div-res-per-page {
+  width: 100%;
+}
+
+.slide-res-per-page {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #00000049; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+	border-radius: 25px;
+	border: 2px solid transparent;
+}
+
+/* Mouse-over effects */
+.slide-res-per-page:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+	border: 2px solid rgb(255, 255, 255);
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slide-res-per-page::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: rgb(0, 0, 0);
+	cursor: pointer;
+}
+
+.slide-res-per-page::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: rgb(0, 255, 8); /* Green background */
+  cursor: pointer; /* Cursor on hover */
+	border: 2px solid transparent;
+}
+.slide-res-per-page::-moz-range-thumb {
+  background: rgb(0, 255, 8); /* Green background */
+	border: 2px solid rgb(255, 255, 255);
+}
+
+
+
+
+
+
+
+
+ /* The switch - the box around the slider */
+ .switch {
+  position: relative;
+  display: inline-block;
+  width: 55px;
+  height: 1rem;
+}
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -5px;;
+  background-color: #00000049;
+  -webkit-transition: .4s;
+	transition: .4s;
+	margin-top:5px;
+	margin-left:5px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: .8rem;
+	width: .8rem;
+	top:.1rem;
+  left: 4px;
+  bottom: 4px;
+  background-color: rgb(255, 255, 255);
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: rgb(33, 243, 51);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(30px);
+  -ms-transform: translateX(30px);
+  transform: translateX(30px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* spinner on off v1 */
+/* .flip-spinner {
+  width: 60px;
+	height: 2rem;
+} */
+  /* perspective: 1000px; */
+/* .flip-spinner-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.4s;
+  transform-style: preserve-3d;
+}
+.flip-spinner:hover .flip-spinner-inner {
+  transform: rotateY(180deg);
+}
+.flip-spinner-front {
+	background-color: green;
+	color:white;
+}
+.flip-spinner-front, .flip-spinner-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	border-radius: .5rem;
+	border: 2px solid white;
+	padding-top:2px;
+}
+.flip-spinner-back {
+  background-color: #2980b9;
+  color: white;
+  transform: rotateY(180deg);
+}
+.div-spinner-action input{
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+ */
+
+
+
+
+
+/* spinner on off v2 */
+	/*  checkbox 
+.div-spinner-action {
+  position: relative;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+	.div-spinner-action input {
+		opacity: 0;
+		cursor: pointer;
+		height: 25px;
+		width: 25px;
+	}
+	
+	.div-spinner-action .checkmark {
+		content: "sssdddss";
+		height: 25px;
+		width: 25px;
+		background-color: rgb(30, 255, 0);
+	}	
+	.div-spinner-action:hover input ~ .checkmark {
+		content: "sssdddss";
+		background-color: rgb(0, 38, 255);
+	}
+	
+	.div-spinner-action input:checked ~ .checkmark {
+		content: "OFF";
+		background-color: #2196F3;
+	}
+	
+	.div-spinner-action .checkmark:after {
+		content: "sss";
+		position: absolute;
+		display: none;
+	}
+	
+	.div-spinner-action input:checked ~ .checkmark {
+		content: "sssdddss";
+		display: block;
+		width: 25px;
+		height: 25px;
+		border: 1px solid rgb(253, 0, 0);
+		z-index:-1;
+	}
+	.div-spinner-action input:checked ~ .checkmark {
+		content: "On";
+	}
+	.div-spinner-action .checkmark {
+		content: "sssdddss";
+		display: block;
+		width: 25px;
+		height: 25px;
+		border: 1px solid rgb(0, 81, 255);
+		z-index:-1;
+	}
+} */

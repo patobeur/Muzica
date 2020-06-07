@@ -1,5 +1,11 @@
+:root{
+	--button_top: -15px;
+	--font_i_ori: 1.5rem;
+	--font_i_des: 1rem;
+}
 #pagefooter {
-	display: inline-block;
+	display: flex;
+	justify-content: center;
 	padding: 0;
 	text-align: center;
 	position: fixed;
@@ -7,11 +13,12 @@
 	bottom: 0;
 	left: 0;
 	z-index: 5;
-	height: 30px;
+	height: 40px;
 }
 #pagefooter .boutton {
 	color: #fff;
-	display: inline-flex;
+	display: flex;
+	flex-direction: column;
 	align-self: top;
 	font-weight: 400;
 	vertical-align: top;
@@ -20,29 +27,55 @@
 	border-radius: 0.3rem;
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
-	border: 0 solid transparent;
-	padding: .5rem .75rem 0;
+	border: 2 solid transparent;
+	padding: .5rem 0.75rem 0;
 	border-bottom: 0;
 	margin: 0 .2rem;
 	height:80px;
-	background-color: #000000da;
-	transition: margin 1s ease-out;
+	background-color: #00000052;
+	transition: margin 1.2s ease-out, background-color 1.3s ease-out, color 1.3s ease-out;
 }
 #pagefooter .boutton i {
-	margin-right: 5px;
+	display: block;
+	margin-bottom:5px;
+	font-size: var(--font_i_ori);
+	transition: font-size 0.4s ease-out;
 }
 #pagefooter .boutton.up{
 	background-color: #ffffff;
 	color: #000000;
 	outline: #000000;
-	margin-top: -20px;
-	transition: margin-top 0.3s ease;
+	margin-top: var(--button_top);
+	transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+#pagefooter .boutton:not(.up):hover i{
+	font-size: 1rem;
+	transition: font-size 0.4s ease-out;
+	font-size: var(--font_i_des);
 }
 #pagefooter .boutton:not(.up):hover {
 	background-color: #ffffff;
 	color: #000000;
 	outline: #000000;
-	margin-top: -20px;
-	transition: margin-top 0.2s ease;
+	margin-top: var(--button_top);
+	transition: margin 0.2s ease-out, background-color 0.2s ease-out, color 0.2s ease-out;
+}
+#pagefooter #options_link {
+	background-color: #00410957;
+}
+
+#pagefooter #options_link.up{
+	background-color: #ffffff;
+	color: #000000;
+	outline: #000000;
+	margin-top: var(--button_top);
+	transition: margin 0.2s ease-out, background-color 0.5s ease-out, color 0.5s ease-out;
+}
+#pagefooter #options_link:not(.up):hover {
+	background-color: #ffffff;
+	color: #000000;
+	outline: #000000;
+	margin-top: var(--button_top);
+	transition: margin 0.2s ease-out, background-color 0.5s ease-out, color 0.5s ease-out;
 }
 
