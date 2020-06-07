@@ -10,6 +10,9 @@ class Muzica {
 		this.showOldSearch = true // to do
 		this.oldSearch = []
 
+		this.minchar = 1
+		this.maxchar = 50
+
 		this.modalFooter = false // youtube & close bottom buttons on modal layout
 		this.nbSubmitDie = 5 // nb max de submit si recherche vide avant de bloquer
 		this.vinylButon = true // n'apparait pas lors de la recherche si true 
@@ -364,15 +367,14 @@ class Muzica {
 				"select": (datas[3] ? datas[3] : null)
 			}
 		)
-		// this.debug ? console.log("oldSearch") : ''
-		// this.debug ? console.log(this.oldSearch) : ''
+		this.debug ? console.log("oldSearch:") : ''
+		this.debug ? console.log(this.oldSearch) : ''
 	}
 	set_InitialSearch() {
 		this.set_This('set_InitialSearch', 'reponseHtml', '')
 		this.set_This('set_InitialSearch', 'reponseReq', null)
 		this.set_This('set_InitialSearch', 'nbSubmit', 0)
 		this.set_This('set_InitialSearch', 'maRecherche', '')
-		// this.set_This('set_InitialSearch','maSelection',null)
 	}
 
 	// GETTERS 
@@ -838,25 +840,18 @@ class Muzica {
 		let bloccontents = document.createElement("div")
 		bloccontents.id = 'pageheadercontent'
 		bloccontents.textContent = 'Make your own search on : '
-
 		let content = document.createElement("a")
 		content.setAttribute('href', 'https://musicbrainz.org/')
 		content.setAttribute('title', 'Make your own search on MusicbrainZ')
 		content.setAttribute('target', '_musicbrainz')
 		content.textContent = 'MusicBrainz - The Open Music Encyclopedia'
-		
-		// let txt = document.createTextNode("");
-		// bloccontents.appendChild(txt)
-
 		bloccontents.appendChild(content)
 		let br = document.createElement("br")
-		bloccontents.appendChild(br)
-		
+		bloccontents.appendChild(br)		
 		if (string) {
 			let txt = document.createTextNode(string);
 			bloccontents.appendChild(txt)
 		}
-
 		document.querySelector("#lareponse").appendChild(bloccontents)
 	}
 	refresh_ResponsTable() {
@@ -1016,10 +1011,8 @@ class Muzica {
 		let optionmodal = document.querySelector("#" + this.optionsModal)
 		if (!optionmodal)
 		{
-			// let limiter = [25,50,75,100]
-			let modalTitle = document.createElement("h3")
-			modalTitle.textContent = "Options"
-
+			let modalTitle = document.createElement("h4")
+			modalTitle.textContent = "OPTIONS"
 			let modalOptions = document.createElement("div")
 			modalOptions.id = this.optionsModal
 			modalOptions.className = this.optionsModal + "-fs"
@@ -1030,19 +1023,23 @@ class Muzica {
 					
 					if (targetedid){document.querySelector("#"+targetedid).classList.remove(this.enabledOptionsClasseName)}
 				}
-			}
-		
+			}		
 			let modalcadre = document.createElement("div")
 			modalcadre.id = "options-modal-cadre"
-			modalcadre.className = "options-modal-cadre"
+			modalcadre.className = "options-modal-cadre"			
+			modalcadre.appendChild(modalTitle)
 			// modalcadre.setAttribute('role', 'document')
 				let modalcontent = document.createElement("div")
 				modalcontent.id = 'options-modal-contenu'
-				modalcontent.className = "options-modal-contenu"
-
+				modalcontent.className = "options-modal-contenu"				
+				modalcadre.appendChild(modalcontent)
+				modalTitle = document.createElement("div")
+				modalTitle.className='modalOptionsTitre'
+				modalTitle.textContent = "SEARCH"
+				modalcontent.appendChild(modalTitle)
 				// SLIDER RESULTS PER PAGE
 				let sliderdiv = document.createElement("div")
-				sliderdiv.className="option-row"
+				sliderdiv.className="option-col"
 				let sliderinfo = document.createElement("div")
 				sliderinfo.className="div-res-per-page-info"
 				sliderinfo.textContent = "Result" + (this.limitPerPage > 1 ? 's' : '') + " wanted per page: " + this.limitPerPage
@@ -1063,23 +1060,53 @@ class Muzica {
 				sliderdiv.appendChild(resperpage)
 				modalcontent.appendChild(sliderdiv)
 				// END SLIDER RESULTS PER PAGE
-
+				modalTitle = document.createElement("div")
+				modalTitle.className='modalOptionsTitre'
+				modalTitle.textContent = "ANIMATIONS"
+				modalcontent.appendChild(modalTitle)
 					modalcontent.appendChild(this.make_Options('modalSpinnerText','Spinner','vinylButon'))
-					modalcontent.appendChild(this.make_Options('modalDebugText','Debug display','debug'))
-					modalcontent.appendChild(this.make_Options('modalOptionsDebugText','OptionsDebug display','optionsdebug'))
+					modalTitle = document.createElement("div")
+					modalTitle.className='modalOptionsTitre'
+					modalTitle.textContent = "DEBUG"
+					modalcontent.appendChild(modalTitle)
+					modalcontent.appendChild(this.make_Options('modalDebugText','Debug lv1','debug'))
+					modalcontent.appendChild(this.make_Options('modalOptionsDebugText','Debug lv2','optionsdebug'))
+
+					
+					modalTitle = document.createElement("div")
+					modalTitle.className='modalOptionsTitre'
+					modalTitle.textContent = "SERVICES"
+					modalcontent.appendChild(modalTitle)
+					modalcontent.appendChild(this.make_Hystory('modalOldSearch2','History','showOldSearch','oldSearch'))
+					// More
+					
+					let moretodo = document.createElement("div")
+					moretodo.className='modalOptionsTitre'
+					moretodo.textContent = "TODO VALUES..."
+					modalcontent.appendChild(moretodo)
+					let todo = document.createElement("div")
+					todo.className='option-row'
+					todo.textContent = "max chars in search: " + this.maxchar
+					modalcontent.appendChild(todo)
+					todo = document.createElement("div")
+					todo.className='option-row'
+					todo.textContent = "Min chars in search: " + this.minchar
+					modalcontent.appendChild(todo)
+
+					moretodo = document.createElement("div")
+					moretodo.className='modalOptionsTitre'
+					moretodo.textContent = "TODO COLORS..."
+					modalcontent.appendChild(moretodo)
+					todo = document.createElement("div")
+					todo.className='option-row'
+					todo.textContent = "Bg color: " 
+					modalcontent.appendChild(todo)
 
 
-
-				modalcadre.appendChild(modalTitle)
-				modalcadre.appendChild(modalcontent)
+					modalcadre.appendChild(modalcontent)
 				modalOptions.appendChild(modalcadre)
-			// for (let i = 0; i< limiter; i++){
-			// 	let limittechoice = document.createElement("div")
-			// 	limittechoice.id = "options-modal-cadre"
-			// 	limittechoice.className = "options-modal-cadre"
-			// }
 			document.body.appendChild(modalOptions)
-			this.optionsdebug ? console.log('ok modal options'): ''
+			this.optionsdebug ? console.log('ok modal options true') : ''
 		}
 		else{
 			if(optionmodal){
@@ -1091,60 +1118,114 @@ class Muzica {
 		}
 	}
 	
-// make_Options('modalDebugText','Debug display','debug')
-make_Options(texteId,textContent,thisValueName){
-				// Debug OR NOT Debug
-				let modalOption = document.createElement("div")
-				modalOption.className = 'option-row'
-					let modalLabel = document.createElement("label")
-					modalLabel.className="switch"
-					let modalText = document.createElement("span")
-					modalText.id = texteId
-					modalText.className = 'spinner-text'
-					modalText.textContent = textContent + " is " + (this[thisValueName] ? 'On' : 'Off')
-					let modalInput = document.createElement("input")
-					modalInput.onclick = (e) => {
-						this.set_This('modalOptions',thisValueName, e.target.checked)
-						document.querySelector("#"+texteId).textContent = textContent + " is " + (this[thisValueName] ? 'On' : 'Off')
-						this.debug ? console.log(thisValueName + ': ' + this[thisValueName]) : ''
+	make_Options(texteId,textContent,thisValueName){
+					let modalOption = document.createElement("div")
+					modalOption.className = 'option-row'
+						let modalLabel = document.createElement("label")
+						modalLabel.className="switch"
+						let modalText = document.createElement("span")
+						modalText.id = texteId
+						modalText.className = 'spinner-text'
+						modalText.textContent = textContent + " is " + (this[thisValueName] ? 'on' : 'off')
+						let modalInput = document.createElement("input")
+						modalInput.onclick = (e) => {
+							this.set_This('modalOptions',thisValueName, e.target.checked)
+							this[thisValueName] ? console.log(thisValueName + ': ' + this[thisValueName]) : ''
+							document.querySelector("#"+texteId).textContent = textContent + " is " + (this[thisValueName] ? 'on' : 'off')
+						}
+						modalInput.setAttribute('type',"checkbox")
+						modalInput.checked = this[thisValueName]
+						let modalSlider = document.createElement("span")
+						modalSlider.className = 'slider round'
+
+						modalLabel.appendChild(modalInput)
+						modalLabel.appendChild(modalSlider)
+						modalOption.appendChild(modalText)
+						modalOption.appendChild(modalLabel)
+						return modalOption
+	}
+
+	make_Hystory(texteId,textContent,thisValueName){
+					let full = document.createElement("div")
+					full.className = 'fullhystory'
+					let modalOption = document.createElement("div")
+					modalOption.className = 'option-row'
+						let modalLabel = document.createElement("label")
+						modalLabel.className="switch"
+						let modalText = document.createElement("span")
+						modalText.id = texteId
+						modalText.className = 'spinner-text'
+						let letexte = (
+								(this.oldSearch.length>0)
+								? this.oldSearch.length + " "
+								: 'No '
+							)	+
+							"current search" +
+							(
+								this.oldSearch.length > 1
+								? "s" 
+								: ""
+							) 
+						modalText.textContent = textContent + ' is ' + (this[thisValueName] ? 'on' : 'off') + ' ( ' + letexte + ')'
+						this.optionsdebug ? console.log(thisValueName + ': ' + this[thisValueName]) : ''
+						let modalInput = document.createElement("input")
+					let modaloldsearch = document.createElement("div")
+					modaloldsearch.id = 'oldsearch'
+					modaloldsearch.className = this[thisValueName] ? 'oldsearch' : 'oldsearch off'
+					for (let i = 0; i < this.oldSearch.length; i++){
+						let br = document.createElement("br")
+						let item = document.createElement("a")
+						item.setAttribute('href', this.oldSearch[i].url)
+						item.setAttribute('title', decodeURI(this.oldSearch[i].recherche))
+						item.setAttribute('target', "_out")
+						item.textContent = decodeURI(this.oldSearch[i].recherche)
+						modaloldsearch.appendChild(item)
+						modaloldsearch.appendChild(br)
+						item = document.createElement("span")
+						item.textContent = " (" + this.oldSearch[i].select + ")"
+						modaloldsearch.appendChild(item)
+						modaloldsearch.appendChild(br)
+						item = document.createElement("span")
+						item.textContent = " " + this.oldSearch[i].nbreponse + "Resp"
+						modaloldsearch.appendChild(item)
+						modaloldsearch.appendChild(br)
+						item = document.createElement("span")
+						item.textContent = " (" + this.oldSearch[i].date + ")"
+						modaloldsearch.appendChild(item)
+						modaloldsearch.appendChild(br)
 					}
-					modalInput.setAttribute('type',"checkbox")
-					modalInput.checked = this[thisValueName]
-					let modalSlider = document.createElement("span")
-					modalSlider.className = 'slider round'
-
-					modalLabel.appendChild(modalInput)
-					modalLabel.appendChild(modalSlider)
-					modalOption.appendChild(modalText)
-					modalOption.appendChild(modalLabel)
-					return modalOption
-
-}
-
-
-
-
-
+						modalInput.onclick = (e) => {
+							this.set_This('modalOptions',thisValueName, e.target.checked)
+							document.querySelector("#"+texteId).textContent = textContent + " is " + (this[thisValueName] ? 'on' : 'off')
+							this.debug ? console.log(thisValueName + ': ' + this[thisValueName]) : ''
+							document.querySelector("#oldsearch").classList = this[thisValueName] ? 'oldsearch' : 'oldsearch off'
+						}
+						modalInput.setAttribute('type',"checkbox")
+						modalInput.checked = this[thisValueName]
+						let modalSlider = document.createElement("span")
+						modalSlider.className = 'slider round'
+						modalLabel.appendChild(modalInput)
+						modalLabel.appendChild(modalSlider)
+						modalOption.appendChild(modalText)
+						modalOption.appendChild(modalLabel)
+						full.appendChild(modalOption)
+						full.appendChild(modaloldsearch)
+						return full
+	}
 	// menu footer
 	make_footer(){
-		//// Footer
-
 		let nbItemsInFooter = 3
-		let textesItems = ['options','github','muzicbrainz','infos','fontawesome','awesome']
+		let textesItems = ['options','github','muzicbrainz','boostrap','fontawesome','awesome']
 		let actionItems = ['modal','link','link','link','link','link']
 		let awesomItems = ['fas fa-sliders-h','fas fa-file-code','fas fa-database','fab fa-font-awesome-flag','fas fa-pencil-ruler']
 		let urlItems = ['#','https://github.com/patobeur/Muzica','https://musicbrainz.org/','https://getbootstrap.com','https://fontawesome.com/icons?m=free']
 		let titleItems = ['Somme Options to do...','Code source from Patobeur on Github','Musbicbrainz Music Database','Bootstrap','free fontawesome icons']
 		let cibleId = "wrapper"
 		let footer = document.querySelector('#'+cibleId)
-
-		//// End Footer
 		if (footer) {
 			let footeritems = document.createElement('div')
-			footeritems.id = 'pagefooter'
-			
-			for (let i = 0;i<nbItemsInFooter;i++){
-			
+			footeritems.id = 'pagefooter'			
+			for (let i = 0;i<nbItemsInFooter;i++){			
 				let bouttonitem = document.createElement("div")
 					bouttonitem.id = textesItems[i] + '_link'
 					bouttonitem.className = 'footerlink boutton'
@@ -1152,19 +1233,12 @@ make_Options(texteId,textContent,thisValueName){
 					bouttonitem.setAttribute('type', 'button')
 					bouttonitem.setAttribute('title', titleItems[i])
 				let awesomeicone = document.createElement("i")
-					awesomeicone.className = awesomItems[i]
-			
+					awesomeicone.className = awesomItems[i]			
 				bouttonitem.prepend(this.capital(textesItems[i]))
 				bouttonitem.prepend(awesomeicone)
-			
-					// let item = textesItems[i] + '_link'
-					bouttonitem.addEventListener(
-						'click',
-						(event)=>{
-							this.animefooter(event,actionItems[i],urlItems[i])
-						}
-					)
-			
+					bouttonitem.addEventListener('click',(event)=>{
+						this.animefooter(event,actionItems[i],urlItems[i])
+					})
 					footeritems.appendChild(bouttonitem)
 					footer.appendChild(footeritems)
 			}
@@ -1193,7 +1267,6 @@ make_Options(texteId,textContent,thisValueName){
 		}
 	}
 }
-
 let Zik = new Muzica('musika')
 Zik.listener()
 Zik.fresh_HtmlPage()
