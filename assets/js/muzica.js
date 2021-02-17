@@ -1219,7 +1219,7 @@ class Muzica {
 		let actionItems = ['modal','link','link','link','link','link']
 		let awesomItems = ['fas fa-sliders-h','fas fa-file-code','fas fa-database','fab fa-font-awesome-flag','fas fa-pencil-ruler']
 		let urlItems = ['#','https://github.com/patobeur/Muzica','https://musicbrainz.org/','https://getbootstrap.com','https://fontawesome.com/icons?m=free']
-		let titleItems = ['Somme Options to do...','Code source from Patobeur on Github','Musbicbrainz Music Database','Bootstrap','free fontawesome icons']
+		let titleItems = ['Some Options to do...','Code source from Patobeur on Github','Musbicbrainz Music Database','Bootstrap','free fontawesome icons']
 		let cibleId = "wrapper"
 		let footer = document.querySelector('#'+cibleId)
 		if (footer) {
